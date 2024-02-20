@@ -9,7 +9,7 @@
 
 class UAbilitySystemComponent;
 class UAttributeSet;
-
+class UGameplayEffect;
 UCLASS(Abstract) // abstract will prevent this class from being able to dragged into the level
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
@@ -35,4 +35,8 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	void InitializePrimaryAttributes() const;
 };
