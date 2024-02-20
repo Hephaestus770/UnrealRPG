@@ -1,1 +1,1 @@
-Continuation of old project in new repository
+An RPG game with Gameplay Ability System in Unreal Engine 5
