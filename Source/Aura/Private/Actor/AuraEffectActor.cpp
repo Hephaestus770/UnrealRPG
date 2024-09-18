@@ -25,7 +25,6 @@ void AAuraEffectActor::BeginPlay()
 	
 }
 
-// This whole function is easier to do in Blueprint
 void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
