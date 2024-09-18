@@ -62,7 +62,6 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	/*
@@ -74,30 +73,30 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
 	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence); // 
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence); // Magical Damage
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dexterity, Category = "Primary Attributes")
 	FGameplayAttributeData Dexterity;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity); // Critical Hit
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity); // Critical Hit Chance, Armor -> (Block Chance, Crit Resist)
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
 	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor); // Max Health, Health Regen
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Endurance, Category = "Primary Attributes")
 	FGameplayAttributeData Endurance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Endurance);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Endurance); // Max Stamina, Stamina Regen
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Focus, Category = "Primary Attributes")
 	FGameplayAttributeData Focus;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Focus);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Focus); // Max Mana, Mana Regen
 	
 	/*
 	* Secondary Attributes
 	*/
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
 	FGameplayAttributeData Armor;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor); // Block Chance, Crit Resist
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Secondary Attributes")
 	FGameplayAttributeData ArmorPenetration;
