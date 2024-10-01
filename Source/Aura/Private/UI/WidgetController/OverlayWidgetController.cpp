@@ -16,6 +16,9 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnManaChanged.Broadcast(AuraAttributeSet->GetMana());
 	OnMaxManaChanged.Broadcast(AuraAttributeSet->GetMaxMana());
 
+	OnStaminaChanged.Broadcast(AuraAttributeSet->GetStamina());
+	OnMaxStaminaChanged.Broadcast(AuraAttributeSet->GetMaxMana());
+
 
 }
 
@@ -51,6 +54,20 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		[this](const FOnAttributeChangeData& Data)
 		{
 			OnMaxManaChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetStaminaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnStaminaChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxStaminaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxStaminaChanged.Broadcast(Data.NewValue);
 		}
 	);
 	

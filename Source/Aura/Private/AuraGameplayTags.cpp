@@ -91,4 +91,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Secondary.MaxMana"),
 		FString("Increases Mana Regen")
 	);
+
+	GameplayTags.Attributes_Secondary_MaxStamina = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Secondary.MaxStamina"),
+		FString("Increases Max Stamina")
+	);
 }
