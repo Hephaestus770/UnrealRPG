@@ -7,11 +7,11 @@
 #include "Interaction/CombatInterface.h"
 UMMC_MaxMana::UMMC_MaxMana()
 {
-	FocusDef.AttributeToCapture = UAuraAttributeSet::GetFocusAttribute();
-	FocusDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	FocusDef.bSnapshot = false;
+	IntelligenceDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
+	IntelligenceDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	IntelligenceDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(FocusDef);
+	RelevantAttributesToCapture.Add(IntelligenceDef);
 
 }
 
@@ -24,13 +24,13 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = Targettags;
 
-	float Focus = 0.f;
-	GetCapturedAttributeMagnitude(FocusDef, Spec, EvaluationParameters, Focus);
-	Focus = FMath::Max<float>(Focus, 0.f);
+	float Intelligence = 0.f;
+	GetCapturedAttributeMagnitude(IntelligenceDef, Spec, EvaluationParameters, Intelligence);
+	Intelligence = FMath::Max<float>(Intelligence, 0.f);
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
 	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();
 
-	return 30 + 2.5f * Focus + 3.f * PlayerLevel;
+	return 30 + 2.5f * Intelligence + 3.f * PlayerLevel;
 
 }

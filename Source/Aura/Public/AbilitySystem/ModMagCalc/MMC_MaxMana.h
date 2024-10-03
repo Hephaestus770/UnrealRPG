@@ -20,5 +20,5 @@ public:
 
 private:
 
-	FGameplayEffectAttributeCaptureDefinition FocusDef;
+	FGameplayEffectAttributeCaptureDefinition IntelligenceDef;
 };

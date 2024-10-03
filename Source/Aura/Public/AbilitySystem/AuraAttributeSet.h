@@ -69,27 +69,30 @@ public:
 	*/
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category="Primary Attributes")
 	FGameplayAttributeData Strength;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength); //Physical Damage, Critical Damage, Armor Pen
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength); //Physical Damage, Max Health
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
 	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence); // Magical Damage
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence); // Magical Damage, 
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dexterity, Category = "Primary Attributes")
 	FGameplayAttributeData Dexterity;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity); // Critical Hit Chance, Armor -> (Block Chance, Crit Resist)
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity); // Critical Hit Chance, Max Stamina
 
+	/*
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
 	FGameplayAttributeData Vigor;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor); // Max Health, Health Regen
-
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Endurance, Category = "Primary Attributes")
 	FGameplayAttributeData Endurance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Endurance); // Max Stamina, Stamina Regen
+	
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Focus, Category = "Primary Attributes")
 	FGameplayAttributeData Focus;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Focus); // Max Mana, Mana Regen
+	*/
 	
 	/*
 	* Secondary Attributes
@@ -185,8 +188,10 @@ public:
 	UFUNCTION()
 	void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const;
 	
+	/*
 	UFUNCTION()
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
+	*/
 
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
@@ -212,11 +217,12 @@ public:
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
+/*
 	UFUNCTION()
 	void OnRep_Endurance(const FGameplayAttributeData& OldEndurance) const;
-
 	UFUNCTION()
 	void OnRep_Focus(const FGameplayAttributeData& OldFocus) const;
+*/
 	
 private:
 

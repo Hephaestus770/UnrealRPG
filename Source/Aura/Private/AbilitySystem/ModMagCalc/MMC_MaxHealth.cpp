@@ -7,11 +7,11 @@
 #include "Interaction/CombatInterface.h"
 UMMC_MaxHealth::UMMC_MaxHealth()
 {
-	VigorDef.AttributeToCapture = UAuraAttributeSet::GetVigorAttribute();
-	VigorDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	VigorDef.bSnapshot = false;
+	StrengthDef.AttributeToCapture = UAuraAttributeSet::GetStrengthAttribute();
+	StrengthDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	StrengthDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(VigorDef);
+	RelevantAttributesToCapture.Add(StrengthDef);
 }
 
 float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -24,14 +24,14 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
 
-	float Vigor = 0.f;
-	GetCapturedAttributeMagnitude(VigorDef, Spec, EvaluationParameters, Vigor);
-	Vigor = FMath::Max<float>(Vigor, 0.f);
+	float Strength = 0.f;
+	GetCapturedAttributeMagnitude(StrengthDef, Spec, EvaluationParameters, Strength);
+	Strength = FMath::Max<float>(Strength, 0.f);
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
 	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();
 
-	return 80.f + 2.5f * Vigor + 5.f * PlayerLevel;
+	return 80.f + 2.5f * Strength + 5.f * PlayerLevel;
 
 }
 
