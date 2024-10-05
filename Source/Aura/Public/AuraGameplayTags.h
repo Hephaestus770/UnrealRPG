@@ -20,9 +20,7 @@ public:
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Dexterity;
-	FGameplayTag Attributes_Primary_Vigor;
-	FGameplayTag Attributes_Primary_Endurance;
-	FGameplayTag Attributes_Primary_Focus;
+
 
 
 	FGameplayTag Attributes_Secondary_Armor;
@@ -33,6 +31,7 @@ public:
 	FGameplayTag Attributes_Secondary_CriticalHitResistance;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
+	FGameplayTag Attributes_Secondary_StaminaRegeneration;
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 	FGameplayTag Attributes_Secondary_MaxStamina;

@@ -24,21 +24,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Increases Magical Damage")
 	);
 
-	GameplayTags.Attributes_Primary_Vigor = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Primary.Vigor"),
-		FString("Increases MaxHealth and Health Regen")
-	);
-
-	GameplayTags.Attributes_Primary_Endurance = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Primary.Endurance"),
-		FString("Increases MaxStamina and Stamina Regen")
-	);
-
-	GameplayTags.Attributes_Primary_Focus = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Primary.Focus"),
-		FString("Increases MaxMana and Mana Regen")
-	);
-
 
 	// SECONDARY ATTRIBUTES TAGS
 
@@ -82,6 +67,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Increases Mana Regeneration")
 	);
 
+	GameplayTags.Attributes_Secondary_StaminaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Secondary.StaminaRegeneration"),
+		FString("Increases Stamina Regeneration")
+	);
+
 	GameplayTags.Attributes_Secondary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.MaxHealth"),
 		FString("Increases Max Health")
@@ -96,4 +86,5 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Secondary.MaxStamina"),
 		FString("Increases Max Stamina")
 	);
+
 }

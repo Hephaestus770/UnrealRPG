@@ -8,7 +8,7 @@
 
 UMMC_MaxStamina::UMMC_MaxStamina()
 {
-	DexterityDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
+	DexterityDef.AttributeToCapture = UAuraAttributeSet::GetDexterityAttribute();
 	DexterityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
 	DexterityDef.bSnapshot = false;
 
