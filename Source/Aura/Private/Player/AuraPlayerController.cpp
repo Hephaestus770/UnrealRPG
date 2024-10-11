@@ -26,73 +26,23 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 void AAuraPlayerController::CursorTrace()
 {
 
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 
-	/**
-	* 1. Both actors are null
-	*	- Do nothing
-	* 2. LastActor is null, ThisActor is valid 
-	*	- Highlight ThisActor
-	* 3. LastActor is valid, ThisActor is null 
-	*	- Unlight LastActor
-	* 4. Both actors are valid 
-	*	- Unlight LastActor, Highlight ThisActor
-	* 5. Both are valid and are the same actor 
-	*	- Do nothing
-	*/
-
-	if (LastActor == nullptr)
+	if (LastActor != ThisActor)
 	{
-		if (ThisActor != nullptr)
-		{
-			// 2.Case
-			ThisActor->HighlightActor();
-		}
-		else
-		{
-			// Both are null, do nothing
-		}
-		
+		if (ThisActor) ThisActor->HighlightActor();
+		if (LastActor) LastActor->UnHighlightActor();
 	}
-
-	else // LastActor is valid
-	{
-		if (ThisActor == nullptr)
-		{
-			// 3.Case
-			LastActor->UnHighlightActor();
-
-		}
-		else // Both are valid Case 4 and 5
-		{
-			if (LastActor != ThisActor) 
-			{
-				// 4. Case 
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-
-			}
-
-			else
-			{
-				// Case 5, do nothing
-
-			}
-		}
-	}
-
-
 
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
