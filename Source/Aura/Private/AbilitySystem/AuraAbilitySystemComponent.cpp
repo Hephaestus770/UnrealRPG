@@ -15,7 +15,7 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 
 void UAuraAbilitySystemComponent::AddCharacterAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupAbilities)
 {
-	for (TSubclassOf<UGameplayAbility> AbilityClass : StarupAbilities)
+	for (const TSubclassOf<UGameplayAbility> AbilityClass : StarupAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		
