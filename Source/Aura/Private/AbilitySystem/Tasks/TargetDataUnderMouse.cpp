@@ -12,13 +12,17 @@ UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGamepl
 
 void UTargetDataUnderMouse::Activate()
 {
-	FHitResult HitResult;
 	
+	FHitResult HitResult;
 	Ability->GetCurrentActorInfo()->PlayerController.Get()->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
-
 	if (!HitResult.bBlockingHit) return;
 
 	ValidData.Broadcast(HitResult.Location);
+}
+
+void UTargetDataUnderMouse::SendMouseCursorData()
+{
+
 
 
 }

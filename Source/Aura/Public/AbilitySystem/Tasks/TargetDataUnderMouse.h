@@ -30,6 +30,6 @@ private:
 
 	virtual void Activate() override;
 
-
+	void SendMouseCursorData();
 
 };
