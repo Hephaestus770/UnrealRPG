@@ -28,6 +28,7 @@ void UTargetDataUnderMouse::Activate()
 		if (!bCalledDelegate)
 		{
 			SetWaitingOnRemotePlayerData();
+			
 		}
 
 	}
@@ -39,8 +40,9 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
+	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult CursorHitResult;
-	Ability->GetCurrentActorInfo()->PlayerController.Get()->GetHitResultUnderCursor(ECC_Visibility, false, CursorHitResult);
+	PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHitResult);
 	
 
 	FGameplayAbilityTargetDataHandle DataHandle;

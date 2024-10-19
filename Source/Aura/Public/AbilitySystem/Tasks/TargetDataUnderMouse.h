@@ -23,7 +23,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FMouseTargetDataSignature ValidData;
-
+	UTargetDataUnderMouse* MyObj;
 
 private:
 
