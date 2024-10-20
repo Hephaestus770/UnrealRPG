@@ -56,7 +56,7 @@ void AAuraEnemy::BeginPlay()
 	}
 
 
-	UAuraAttributeSet* AuraAS = CastChecked<UAuraAttributeSet>(AttributeSet);
+	UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet);
 	if (AuraAS)
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
@@ -73,11 +73,11 @@ void AAuraEnemy::BeginPlay()
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
-		if (HasAuthority())
-		{
 
-		OnHealthChanged.Broadcast(AuraAS->GetHealth());
-		OnHealthChanged.Broadcast(AuraAS->GetMaxHealth());
+		if (HasAuthority())
+		{	
+			OnHealthChanged.Broadcast(AuraAS->GetHealth());
+			OnMaxHealthChanged.Broadcast(AuraAS->GetMaxHealth());
 		}
 
 	}
