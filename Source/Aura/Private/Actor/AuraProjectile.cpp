@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Aura/Aura.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -54,7 +56,7 @@ void AAuraProjectile::Destroyed()
 	Super::Destroyed();
 }
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+									  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
@@ -63,6 +65,15 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (HasAuthority())
 	{
+			
+		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)) // does overlaaping component has ASC?
+		{
+			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+
+		}
+
+
+
 		Destroy();
 	}
 	else
