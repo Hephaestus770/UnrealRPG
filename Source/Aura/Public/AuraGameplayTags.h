@@ -17,12 +17,12 @@ public:
 	static const FAuraGameplayTags& Get() { return GameplayTags; }
 	static void InitializeNativeGameplayTags();
 
+	// Primary Attribute Tags
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Dexterity;
 
-
-
+	// Secondary Attribute Tags
 	FGameplayTag Attributes_Secondary_Armor;
 	FGameplayTag Attributes_Secondary_ArmorPenetration;
 	FGameplayTag Attributes_Secondary_BlockChance;
@@ -44,6 +44,9 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 
+
+	// Damage Tags
+	FGameplayTag Damage;
 
 
 private:
