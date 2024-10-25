@@ -45,8 +45,9 @@ public:
 	FGameplayTag InputTag_4;
 
 
-	// Damage Tags
+	// Combat Tags
 	FGameplayTag Damage;
+	FGameplayTag Effects_HitReact;
 
 
 private:
