@@ -7,7 +7,9 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "AuraGameplayTags.h"
+#include "Player/AuraPlayerController.h"
 
 
 
@@ -119,6 +121,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 
 }
 
+
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -151,7 +154,6 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bFatal = NewHealth <= 0.f; // check to if fatal damage
-			
 			if (bFatal)
 			{
 				
@@ -170,9 +172,25 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			}
 
+			ShowFloatingText(Props, LocalIncomingDamage);
 		}
 	}
 }
+
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage) const
+{
+
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		AAuraPlayerController* PlayerController = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0));
+		if (PlayerController)
+		{
+			PlayerController->ShowDamageNumber(Damage, Props.TargetCharacter);
+		}
+	}
+
+}
+
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
