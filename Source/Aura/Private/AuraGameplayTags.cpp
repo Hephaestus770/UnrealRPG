@@ -122,7 +122,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 
-	// COMBAT TAGS
+	// DAMAGE TAGS
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Damage"),
 		FString("Damage")
@@ -137,6 +137,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
 
+
+
+	// COMBAT TAGS
 	GameplayTags.Effects_HitReact= UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.HitReact"),
 		FString("Tag granted when Hit Reacting")

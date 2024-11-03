@@ -45,13 +45,17 @@ public:
 	FGameplayTag InputTag_4;
 
 
-	// Combat Tags
+	// Damage Tags
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Physical;
 
 	TArray<FGameplayTag> DamageTypes;
 
 
+	// Combat Tags
 	FGameplayTag Effects_HitReact;
 
 
