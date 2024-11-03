@@ -24,6 +24,7 @@ public:
 
 	// Secondary Attribute Tags
 	FGameplayTag Attributes_Secondary_Armor;
+	FGameplayTag Attributes_Secondary_Resilience;
 	FGameplayTag Attributes_Secondary_ArmorPenetration;
 	FGameplayTag Attributes_Secondary_BlockChance;
 	FGameplayTag Attributes_Secondary_CriticalHitChance;
@@ -35,6 +36,11 @@ public:
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 	FGameplayTag Attributes_Secondary_MaxStamina;
+
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
 
 	// Input Tags
 	FGameplayTag InputTag_LMB;
@@ -52,7 +58,8 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
-	TArray<FGameplayTag> DamageTypes;
+	
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
 
 	// Combat Tags

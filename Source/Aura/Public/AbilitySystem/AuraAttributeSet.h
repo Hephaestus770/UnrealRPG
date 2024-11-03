@@ -87,27 +87,17 @@ public:
 	FGameplayAttributeData Dexterity;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity); // Critical Hit Chance, Max Stamina
 
-	/*
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
-	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor); // Max Health, Health Regen
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Endurance, Category = "Primary Attributes")
-	FGameplayAttributeData Endurance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Endurance); // Max Stamina, Stamina Regen
-	
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Focus, Category = "Primary Attributes")
-	FGameplayAttributeData Focus;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Focus); // Max Mana, Mana Regen
-	*/
 	
 	/*
 	* Secondary Attributes
 	*/
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
 	FGameplayAttributeData Armor;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor); // Block Chance, Crit Resist
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor); // Physical Resistance, Block Chance, Crit Resist
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Secondary Attributes")
+	FGameplayAttributeData Resilience;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Resilience); // Non-Physical Resistance
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Secondary Attributes")
 	FGameplayAttributeData ArmorPenetration;
@@ -153,6 +143,25 @@ public:
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxStamina);
 
+	/*
+	* Resistance Attributes
+	*/
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcanaResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ArcanaResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcanaResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalResistance);
 
 	/*
 	* Vital Attributes
@@ -206,14 +215,12 @@ public:
 	
 	UFUNCTION()
 	void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const;
-	
-	/*
-	UFUNCTION()
-	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
-	*/
 
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
 
 	UFUNCTION()
 	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
@@ -238,12 +245,20 @@ public:
 
 	UFUNCTION()
 	void OnRep_StaminaRegeneration(const FGameplayAttributeData& OldStaminaRegeneration) const;
-/*
+
+	
 	UFUNCTION()
-	void OnRep_Endurance(const FGameplayAttributeData& OldEndurance) const;
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+
 	UFUNCTION()
-	void OnRep_Focus(const FGameplayAttributeData& OldFocus) const;
-*/
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
+
+	UFUNCTION()
+	void OnRep_ArcanaResistance(const FGameplayAttributeData& OldArcanaResistance) const;
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+
 	
 private:
 
