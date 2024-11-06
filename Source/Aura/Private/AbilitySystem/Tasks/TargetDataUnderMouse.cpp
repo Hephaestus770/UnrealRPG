@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Tasks/TargetDataUnderMouse.h"
 #include "AbilitySystemComponent.h"
+#include "Aura/Aura.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -20,8 +21,8 @@ void UTargetDataUnderMouse::Activate()
 	else
 	{
 		//We are on the server, so listen for target data
-		FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
-		FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
+		const FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
+		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
 		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(SpecHandle, ActivationPredictionKey).AddUObject(this, &UTargetDataUnderMouse::OnTargetDataReplicationCallback);
 		const bool bCalledDelegate = AbilitySystemComponent.Get()->CallReplicatedTargetDataDelegatesIfSet(SpecHandle, ActivationPredictionKey);
 
@@ -54,7 +55,8 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
 		GetAbilitySpecHandle(), 
 		GetActivationPredictionKey(), 
-		DataHandle, FGameplayTag(), 
+		DataHandle, 
+		FGameplayTag(), 
 		AbilitySystemComponent->ScopedPredictionKey);
 
 	if (ShouldBroadcastAbilityTaskDelegates())
@@ -69,4 +71,8 @@ void UTargetDataUnderMouse::OnTargetDataReplicationCallback(const FGameplayAbili
 {
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey()); // Tells target data has been received, dont keep it stored
 
+	if (ShouldBroadcastAbilityTaskDelegates())
+	{
+		ValidData.Broadcast(DataHandle);
+	}
 }
