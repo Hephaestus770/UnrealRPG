@@ -26,16 +26,17 @@ public:
 	AAuraEnemy();
 	virtual void PossessedBy(AController* NewController) override;
 
-	// Begin EnemyInterface
+	// EnemyInterface
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
-	// End EnemyInterface
+	// end EnemyInterface
 
-	// Begin CombatInterface
+	// CombatInterface
 	virtual int32 GetPlayerLevel() override;
 	virtual void Die() override;
-
-	// End CombatInterface
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
+	// end CombatInterface
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
@@ -53,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
 
 protected:
 	virtual void BeginPlay() override;
