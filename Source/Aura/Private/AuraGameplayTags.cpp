@@ -180,6 +180,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Left Hand")
 	);
 
+	GameplayTags.Montage_Cancel = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Cancel"),
+		FString("Montage Cancel")
+	);
+
 
 	// DAMAGE RESISTANCES 
 
