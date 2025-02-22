@@ -66,6 +66,8 @@ public:
 	FGameplayTag Montage_Attack_RightHand;
 	FGameplayTag Montage_Attack_LeftHand;
 	FGameplayTag Montage_Cancel;
+	FGameplayTag Socket_SecondWeaponSocket;
+
 	
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 

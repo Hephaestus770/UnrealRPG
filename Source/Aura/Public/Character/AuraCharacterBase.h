@@ -53,6 +53,9 @@ protected:
 	FName WeaponTipSocketName;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName SecondWeaponSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")

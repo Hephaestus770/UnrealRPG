@@ -185,6 +185,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Montage Cancel")
 	);
 
+	GameplayTags.Socket_SecondWeaponSocket = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Socket.SecondWeaponSocket"),
+		FString("Second Weapon Socket")
+	);
+
 
 	// DAMAGE RESISTANCES 
 

@@ -73,6 +73,11 @@ FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGamepl
 		return Weapon->GetSocketLocation(WeaponTipSocketName);
 	}
 
+	if (MontageTag.MatchesTagExact(GameplayTags.Socket_SecondWeaponSocket) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(SecondWeaponSocketName);
+	}
+
 	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
 	{
 		return GetMesh()->GetSocketLocation(RightHandSocketName);
