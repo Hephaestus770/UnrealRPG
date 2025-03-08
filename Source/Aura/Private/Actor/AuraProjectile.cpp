@@ -10,6 +10,7 @@
 #include "Components/AudioComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -54,7 +55,7 @@ void AAuraProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		if (LoopingSoundComponent)
+		if (IsValid(LoopingSoundComponent))
 		{
 			LoopingSoundComponent->Stop();
 		}
@@ -66,11 +67,18 @@ void AAuraProjectile::Destroyed()
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 									  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	
 	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser() == OtherActor)
 	{
 		return;
 	}
+	// Ignore this projectile's Owner (replicated property) which we set to the spawning ability's Avatar Actor through UWorld::SpawnActorDeferred().
+	if (OtherActor == GetOwner()) 
+		return;
+	
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(GetOwner(), OtherActor))
+		return;
+	
 
 	if (!bDidHit)
 	{
@@ -83,8 +91,8 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	}
 	
-
-	if (HasAuthority())
+	// NOTE: We are setting DamageEffectSpecHandle (not replicated) only in the server while spawning this projectile.
+	if (HasAuthority() && DamageEffectSpecHandle != nullptr)
 	{
 			
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)) // does overlaaping component has ASC?
