@@ -85,7 +85,7 @@ protected:
 
 	virtual void InitializeDefaultAttributes() const;
 
-	void AddCharacterAbilties();
+	void AddCharacterAbilities();
 
 
 	// Dissolve Effects

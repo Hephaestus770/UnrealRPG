@@ -38,6 +38,10 @@ public:
 	virtual AActor* GetCombatTarget_Implementation() const override;
 	// end CombatInterface
 
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> EnemyAbilities;
+
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
 

@@ -128,16 +128,18 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
 
-void AAuraCharacterBase::AddCharacterAbilties()
+void AAuraCharacterBase::AddCharacterAbilities()
 {
 
 	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	if (!HasAuthority()) return;
 
 	AuraASC->AddCharacterAbilites(StartupAbilities);
+	UE_LOG(LogTemp, Warning, TEXT("ABILITY Added:"));
 
 
 }
+
 
 void AAuraCharacterBase::Dissolve()
 {
