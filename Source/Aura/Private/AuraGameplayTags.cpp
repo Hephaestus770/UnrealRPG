@@ -163,31 +163,54 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 	
-	// MONTAGES
+	// SOCKETS
 
-	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Montage.Attack.Weapon"),
+	GameplayTags.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.Weapon"),
 		FString("Weapon")
 	);
 
-	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Montage.Attack.RightHand"),
+	GameplayTags.CombatSocket_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.RightHand"),
 		FString("Right Hand")
 	);
 
-	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Montage.Attack.LeftHand"),
+	GameplayTags.CombatSocket_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.LeftHand"),
 		FString("Left Hand")
 	);
 
-	GameplayTags.Montage_Cancel = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Montage.Cancel"),
-		FString("Montage Cancel")
+
+	GameplayTags.CombatSocket_WeaponSecondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.WeaponSecondary"),
+		FString("Second Weapon Socket")
 	);
 
-	GameplayTags.Socket_SecondWeaponSocket = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Socket.SecondWeaponSocket"),
-		FString("Second Weapon Socket")
+
+	// MONTAGES
+	GameplayTags.Montage_End = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.End"),
+		FString("Montage End")
+	);
+
+	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.1"),
+		FString("Attack 1")
+	);
+
+	GameplayTags.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.2"),
+		FString("Attack 2")
+	);
+
+	GameplayTags.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.3"),
+		FString("Attack 3")
+	);
+
+	GameplayTags.Montage_Attack_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.4"),
+		FString("Attack 4")
 	);
 
 
@@ -215,7 +238,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 
 	// MAP OF DAMAGE TYPES TO RESISTANCES
-
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Lightning, GameplayTags.Attributes_Resistance_Lightning);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);

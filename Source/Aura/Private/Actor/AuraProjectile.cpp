@@ -55,7 +55,7 @@ void AAuraProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		if (IsValid(LoopingSoundComponent))
+		if (LoopingSoundComponent)
 		{
 			LoopingSoundComponent->Stop();
 		}
@@ -72,9 +72,11 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		return;
 	}
-	// Ignore this projectile's Owner (replicated property) which we set to the spawning ability's Avatar Actor through UWorld::SpawnActorDeferred().
+/*
+// Ignore this projectile's Owner (replicated property) which we set to the spawning ability's Avatar Actor through UWorld::SpawnActorDeferred().
 	if (OtherActor == GetOwner()) 
 		return;
+*/
 	
 	if (!UAuraAbilitySystemLibrary::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser(), OtherActor))
 		return;
