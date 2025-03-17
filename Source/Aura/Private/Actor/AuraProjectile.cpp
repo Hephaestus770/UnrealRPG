@@ -59,6 +59,7 @@ void AAuraProjectile::Destroyed()
 		{
 			LoopingSoundComponent->Stop();
 		}
+		bDidHit = true;
 	}
 
 	Super::Destroyed();
@@ -90,7 +91,7 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 		{
 			LoopingSoundComponent->Stop();
 		}
-
+		bDidHit = true;
 	}
 	
 	// NOTE: We are setting DamageEffectSpecHandle (not replicated) only in the server while spawning this projectile.
