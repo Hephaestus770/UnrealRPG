@@ -186,6 +186,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Second Weapon Socket")
 	);
 
+	GameplayTags.CombatSocket_Tail= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.Tail"),
+		FString("Tail Socket")
+	);
 
 	// MONTAGES
 	GameplayTags.Montage_End = UGameplayTagsManager::Get().AddNativeGameplayTag(
