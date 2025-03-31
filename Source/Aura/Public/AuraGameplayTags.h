@@ -58,8 +58,9 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
-
+	//Ability Tags
 	FGameplayTag Abilities_Attack;
+	FGameplayTag Abilities_Summon;
 
 	//Socket Tags
 	FGameplayTag CombatSocket_Weapon;

@@ -1,0 +1,40 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "AbilitySystem/Abilities/AuraSummonAbility.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+TArray<FVector> UAuraSummonAbility::GetSpawnLocations()
+{
+	const FVector Forward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	const FVector Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	const float DeltaSpread = SpawnSpread / NumMinions;
+
+	const FVector LeftOfSpread = Forward.RotateAngleAxis(-SpawnSpread / 2.f, FVector::UpVector);
+	TArray<FVector> SpawnLocations;
+	for (int32 i = 0; i < NumMinions; i++)
+	{
+		const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
+		FVector ChosenSpawnLocation = Location + Direction * FMath::FRandRange(MinSpawnDistance, MaxSpawnDistance);
+
+		FHitResult Hit;
+		GetWorld()->LineTraceSingleByChannel(Hit, ChosenSpawnLocation + FVector(0.f, 0.f, 100.f), ChosenSpawnLocation - FVector(0.f, 0.f, 100.f), ECC_Visibility);
+		//DrawDebugLine(GetWorld(), ChosenSpawnLocation + FVector(0.f, 0.f, 100.f), ChosenSpawnLocation - FVector(0.f, 0.f, 100.f), FColor::Red, false, 2.0f, 10.f, 10.f);
+
+		if (Hit.bBlockingHit)
+		{
+			//DrawDebugLine(GetWorld(), ChosenSpawnLocation + FVector(0.f, 0.f, 100.f), ChosenSpawnLocation - FVector(0.f, 0.f, 100.f), FColor::Red, false, 2.0f, 10.f, 10.f);
+			ChosenSpawnLocation = Hit.ImpactPoint;
+		}
+
+		SpawnLocations.Add(ChosenSpawnLocation);
+
+	}
+	
+	return SpawnLocations;
+}
+
+TSubclassOf<APawn> UAuraSummonAbility::GetRandomMinionClass()
+{
+	int32 Selection = FMath::RandRange(0, MinionClasses.Num() - 1);
+	return MinionClasses[Selection];
+}
