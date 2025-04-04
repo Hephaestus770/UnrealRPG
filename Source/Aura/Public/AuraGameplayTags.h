@@ -63,6 +63,7 @@ public:
 	FGameplayTag Abilities_Summon;
 	
 	FGameplayTag Abilities_Fire_Firebolt;
+	FGameplayTag Cooldown_Fire_Firebolt;
 
 	//Socket Tags
 	FGameplayTag CombatSocket_Weapon;
