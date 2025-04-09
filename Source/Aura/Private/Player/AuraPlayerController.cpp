@@ -209,6 +209,9 @@ bool AAuraPlayerController::HideOccludedActor(const AActor* Actor)
 			*Actor->GetName());
 		return false;
 	}
+	
+	UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	if (!StaticMesh) return false; // Early exit if no static mesh
 
 	if (ExistingOccludedActor && IsValid(ExistingOccludedActor->Actor))
 	{
@@ -219,8 +222,8 @@ bool AAuraPlayerController::HideOccludedActor(const AActor* Actor)
 	}
 	else
 	{
-		UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(
-			Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+		//UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(
+			//Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 
 		FCameraOccludedActor OccludedActor;
 		OccludedActor.Actor = Actor;
@@ -267,7 +270,7 @@ bool AAuraPlayerController::OnShowOccludedActor(const FCameraOccludedActor& Occl
 	{
 		OccludedActor.StaticMesh->SetMaterial(matIdx, OccludedActor.Materials[matIdx]);
 	}
-
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	return true;
 }
 
@@ -277,6 +280,8 @@ bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& Occl
 	{
 		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
 	}
+
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
 	return true;
 }
