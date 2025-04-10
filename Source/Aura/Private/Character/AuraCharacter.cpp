@@ -24,7 +24,7 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false; 
 
-	CharacterClass = ECharacterClass::Elementalist;
+	CharacterClass = ECharacterClass::Elementalist; // Player Character is Elementalist Class
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)

@@ -173,8 +173,7 @@ void AAuraCharacterBase::AddCharacterAbilities()
 	if (!HasAuthority()) return;
 
 	AuraASC->AddCharacterAbilites(StartupAbilities);
-	UE_LOG(LogTemp, Warning, TEXT("ABILITY Added:"));
-
+	AuraASC->AddCharacterPassiveAbilites(StartupPassiveAbilities);
 
 }
 

@@ -26,6 +26,8 @@ public:
 	FAbilitiesGiven AbilitiesGivenDelegate;
 
 	void AddCharacterAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupAbilities);
+	void AddCharacterPassiveAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupPassiveAbilities);
+
 	bool bStartupAbilitiesGiven = false; // Purpose of this: First abilities will be given then delegate bindings in overlay widget will happen
 
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);

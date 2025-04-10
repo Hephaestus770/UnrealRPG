@@ -37,10 +37,15 @@ public:
 	FGameplayTag Attributes_Secondary_MaxMana;
 	FGameplayTag Attributes_Secondary_MaxStamina;
 
+	// Resistance Attribute Tags
 	FGameplayTag Attributes_Resistance_Fire;
 	FGameplayTag Attributes_Resistance_Lightning;
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physical;
+
+	// Meta Attribute Tags
+	FGameplayTag Attributes_Meta_IncomingXP;
+
 
 	// Input Tags
 	FGameplayTag InputTag_LMB;
