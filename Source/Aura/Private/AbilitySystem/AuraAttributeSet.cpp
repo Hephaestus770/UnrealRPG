@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AuraGameplayTags.h"
 #include "Player/AuraPlayerController.h"
+#include "Interaction/PlayerInterface.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
 
@@ -155,13 +156,6 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
 	}
 
-	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
-	{
-		const float LocalIncomingXP = GetIncomingXP();
-		SetIncomingXP(0.f);
-		UE_LOG(LogTemp, Warning, TEXT("Incoming XP: %f"), LocalIncomingXP);
-	}
-
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float LocalIncomingDamage = GetIncomingDamage();
@@ -193,6 +187,20 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 			const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		const float LocalIncomingXP = GetIncomingXP();
+		SetIncomingXP(0.f);
+		UE_LOG(LogTemp, Warning, TEXT("Incoming XP: %f"), LocalIncomingXP);
+
+		//TODO: See if we should level up
+		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+
 		}
 	}
 }
