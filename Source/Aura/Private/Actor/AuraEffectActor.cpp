@@ -99,7 +99,7 @@ void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 		TArray<FActiveGameplayEffectHandle> HandlesToRemove;
 		for (TTuple<FActiveGameplayEffectHandle, UAbilitySystemComponent*> HandlePair : ActiveEffectHandles)
 		{
-			if (TargetASC == HandlePair.Value)
+			if (TargetASC == HandlePair.Value && HasAuthority())
 			{
 				TargetASC->RemoveActiveGameplayEffect(HandlePair.Key, 1);
 				HandlesToRemove.Add(HandlePair.Key);
