@@ -6,15 +6,20 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerState.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Aura/Public/Player/AuraPlayerController.h"
-#include <UI/HUD/AuraHUD.h>
+#include "UI/HUD/AuraHUD.h"
 
 
 
 
 AAuraCharacter::AAuraCharacter()
 {
+	LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
+	LevelUpNiagaraComponent->SetupAttachment(GetRootComponent());
+	LevelUpNiagaraComponent->bAutoActivate = false;
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
@@ -50,11 +55,27 @@ void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 	check(AuraPlayerState);
 	AuraPlayerState->AddtoXP(InXP);
 }
-
+/*
 void AAuraCharacter::LevelUp_Implementation()
 {
-
+	
 }
+
+
+int32 AAuraCharacter::GetXP_Implementation() const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	return AuraPlayerState->GetXP();
+}
+
+int32 AAuraCharacter::FindLevelForXP_Implementation(int32 InXP) const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	return AuraPlayerState->LevelUpInfo->FindLevelForXP(InXP);
+}
+*/
 
 int32 AAuraCharacter::GetPlayerLevel_Implementation()
 {
@@ -83,4 +104,21 @@ void AAuraCharacter::InitAbilityActorInfo()
 	}
 
 	InitializeDefaultAttributes();
+
+	// Subscribe to OnLevelChangeDelegate to play the vfx
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda(
+		[this](const int32 NewValue)
+	{
+		MulticastLevelUpParticles();
+	}
+	);
+}
+
+void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
+{
+	if (IsValid(LevelUpNiagaraComponent))
+	{
+		 
+		LevelUpNiagaraComponent->Activate(true);
+	}
 }

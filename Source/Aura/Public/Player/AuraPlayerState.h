@@ -33,15 +33,23 @@ public:
 
 	FOnPlayerStatChanged OnXPChangedDelegate;
 	FOnPlayerStatChanged OnLevelChangedDelegate;
+	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
+	FOnPlayerStatChanged OnSpellPointsChangedDelegate;
 
 	FORCEINLINE int32 GetPlayerLevel() { return Level; }
 	FORCEINLINE int32 GetXP() { return XP; }
 
 	void AddtoXP(int32 InXP);
 	void AddtoLevel(int32 InLevel);
+	void AddtoAttributePoints(int32 InAttributePoints);
+	void AddToSpellPoints(int32 InPoints);
+
 
 	void SetXP(int32 InXP);
 	void SetLevel(int32 InLevel);
+	void SetAttributePoints(int32 InPoints);
+	void SetSpellPoints(int32 InPoints);
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -56,11 +64,24 @@ private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP)
 	int32 XP = 0;
 
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AttributePoints)
+	int32 AttributePoints = 0;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SpellPoints)
+	int32 SpellPoints = 0;
+
 public:
 
 	UFUNCTION()
-	void OnRep_Level(int32 OldLevel) const;
+	void OnRep_Level(int32 OldLevel);
 
 	UFUNCTION()
-	void OnRep_XP(int32 OldXP) const;
+	void OnRep_XP(int32 OldXP);
+
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints);
+
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints);
+
 };
