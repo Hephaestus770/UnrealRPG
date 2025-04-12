@@ -30,8 +30,11 @@ float UMMC_MaxStamina::CalculateBaseMagnitude_Implementation(const FGameplayEffe
 	GetCapturedAttributeMagnitude(DexterityDef, Spec, EvaluationParameters, Dexterity);
 	Dexterity = FMath::Max<float>(Dexterity, 0.f);
 
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();
+	int32 PlayerLevel = 1;
+	if (Spec.GetContext().GetSourceObject()->Implements<UCombatInterface>())
+	{
+		PlayerLevel = ICombatInterface::Execute_GetPlayerLevel(Spec.GetContext().GetSourceObject());
+	}
 
 	return 30 + 2.5f * Dexterity + 3.f * PlayerLevel;
 
