@@ -118,7 +118,6 @@ void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
 {
 	if (IsValid(LevelUpNiagaraComponent))
 	{
-		 
 		LevelUpNiagaraComponent->Activate(true);
 	}
 }

@@ -37,6 +37,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
 
+
 protected:
 	virtual void InitAbilityActorInfo() override;
 
