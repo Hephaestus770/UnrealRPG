@@ -38,6 +38,8 @@ public:
 
 	FORCEINLINE int32 GetPlayerLevel() { return Level; }
 	FORCEINLINE int32 GetXP() { return XP; }
+	FORCEINLINE int32 GetAttributePoints() { return AttributePoints; }
+	FORCEINLINE int32 GetSpellPoints() { return SpellPoints; }
 
 	void AddtoXP(int32 InXP);
 	void AddtoLevel(int32 InLevel);
