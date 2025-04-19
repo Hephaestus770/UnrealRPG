@@ -178,7 +178,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			else // if it's not gonna die, do hit react
 			{
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 
 			}
