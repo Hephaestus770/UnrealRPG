@@ -71,6 +71,9 @@ public:
 	FGameplayTag Abilities_HitReact;
 	
 	FGameplayTag Abilities_Fire_Firebolt;
+	FGameplayTag Abilities_Lightning_Electrocute;
+
+	//Cooldown Tags
 	FGameplayTag Cooldown_Fire_Firebolt;
 
 	//Ability Status Tags
