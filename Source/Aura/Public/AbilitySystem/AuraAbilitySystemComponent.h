@@ -9,6 +9,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag& /*AbilityTag*/, const FGameplayTag& /*StatusTag*/);
 
 /**
  * 
@@ -24,6 +25,7 @@ public:
 	//Delegates
 	FEffectAssetTags EffectAssetTags;
 	FAbilitiesGiven AbilitiesGivenDelegate;
+	FAbilityStatusChanged AbilityStatusChanged;
 
 	void AddCharacterAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupAbilities);
 	void AddCharacterPassiveAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupPassiveAbilities);
@@ -54,4 +56,7 @@ protected:
 
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
 };

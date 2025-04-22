@@ -65,6 +65,12 @@ void AAuraPlayerState::AddtoLevel(int32 InLevel)
 {
 	Level += InLevel;
 	OnLevelChangedDelegate.Broadcast(Level);
+
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		AuraASC->UpdateAbilityStatuses(Level);
+	}
+
 }
 
 void AAuraPlayerState::AddtoAttributePoints(int32 InAttributePoints)
