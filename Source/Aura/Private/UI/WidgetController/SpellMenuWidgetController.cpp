@@ -32,3 +32,8 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 		SpellPointsChanged.Broadcast(Points);
 	});
 }
+
+void USpellMenuWidgetController::SelectAbility(UAuraUserWidget* AbilityButton)
+{
+	AbilitySelected.Broadcast(AbilityButton);
+}

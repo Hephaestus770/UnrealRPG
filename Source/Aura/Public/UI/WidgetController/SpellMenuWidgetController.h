@@ -6,6 +6,8 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "SpellMenuWidgetController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilitySelectedSignature, UAuraUserWidget*, AbilityButton);
+
 /**
  * 
  */
@@ -20,5 +22,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStatChangedSignature SpellPointsChanged;
-	
+
+	// Ability Button Selection
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Spells Menu")
+	FAbilitySelectedSignature AbilitySelected;
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Spells Menu")
+	void SelectAbility(UAuraUserWidget* AbilityButton);
 };
