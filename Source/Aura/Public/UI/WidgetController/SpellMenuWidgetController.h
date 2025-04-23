@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UI/WidgetController/AuraWidgetController.h"
+#include "AuraGameplayTags.h"
+#include "GameplayTagContainer.h"
 #include "SpellMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilitySelectedSignature, UAuraUserWidget*, AbilityButton);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpellGlobeSelectedSignature, bool, bSpendPointsEnabled, bool, bEquipButtonEnabled);
 
 /**
  * 
@@ -23,10 +26,22 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStatChangedSignature SpellPointsChanged;
 
-	// Ability Button Selection
+	UPROPERTY(BlueprintAssignable)
+	FSpellGlobeSelectedSignature SpellGlobeSelectedDelegate;
+
+	// Ability Button Selection 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Spells Menu")
 	FAbilitySelectedSignature AbilitySelected;
 
 	UFUNCTION(BlueprintCallable, Category = "GAS|Spells Menu")
 	void SelectAbility(UAuraUserWidget* AbilityButton);
+	// end
+
+	UFUNCTION(BlueprintCallable)
+	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
+
+private:
+
+	static void ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints, bool& bShouldEnableSpellPointsButton, bool& bShouldEnableEquipButton);
+
 };
