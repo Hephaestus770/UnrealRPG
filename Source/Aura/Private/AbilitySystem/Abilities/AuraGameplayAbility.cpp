@@ -3,17 +3,32 @@
 
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 
-FString UAuraGameplayAbility::GetDescription(int32 Level)
+FText UAuraGameplayAbility::GetDescription(int32 Level) const
 {
-	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Default Ability Name - LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum", Level);
+    FFormatNamedArguments Args;
+    Args.Add("Name", FText::FromString(TEXT("Default Ability Name - LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum")));
+    Args.Add("Level", FText::AsNumber(Level));
+
+    return FText::Format(FText::FromString("<Default>{Name}, </><Level>{Level}</>"), Args);
 }
 
-FString UAuraGameplayAbility::GetNextLevelDescription(int32 Level)
+FText UAuraGameplayAbility::GetNextLevelDescription(int32 Level) const
 {
-	return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default>Causes much more damage </>"), Level);
+    FFormatNamedArguments Args;
+    Args.Add("Level", FText::AsNumber(Level));
+
+    return FText::Format(
+        FText::FromString("<Default>Next Level: </><Level>{Level}</>\n<Default>Causes much more damage</>"),
+        Args
+    );
+
 }
 
-FString UAuraGameplayAbility::GetLockedDescription(int32 Level)
+FText UAuraGameplayAbility::GetLockedDescription(int32 Level)
 {
-	return FString::Printf(TEXT("<Default>Spell Locked Until Level: %d</>"), Level);
+    FFormatNamedArguments Args;
+    Args.Add("Level", FText::AsNumber(Level));
+
+    return FText::Format(FText::FromString("<Default>Spell Locked Until Level: {Level}</>"), Args);
 }
+

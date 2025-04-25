@@ -54,7 +54,7 @@ public:
 	void ServerSpendSpellPoint(const FGameplayTag& AbilityTag);
 
 	// return boolean if 
-	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
+	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FText& OutDescription, FText& OutNextLevelDescription);
 
 protected:
 
