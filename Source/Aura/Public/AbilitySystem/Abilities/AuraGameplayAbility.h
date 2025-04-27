@@ -19,8 +19,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
 
-	virtual FText GetDescription(int32 Level) const;
-	virtual FText GetNextLevelDescription(int32 Level) const;
+	virtual FText GetDescription(int32 Level);
+	virtual FText GetNextLevelDescription(int32 Level);
 	static FText GetLockedDescription(int32 Level);
 
+protected:
+
+	// This will get only static value of ManaCost, not suitable for things like Get %10 of current mana or other attribute values
+	float GetManaCost(float InLevel = 1.f) const;
+	// Same as GetManaCost
+	float GetCooldown(float InLevel = 1.f) const;
 };
