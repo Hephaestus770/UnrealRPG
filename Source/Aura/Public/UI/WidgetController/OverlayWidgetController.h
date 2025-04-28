@@ -88,6 +88,9 @@ protected:
 	T* GetDataTableRowByTag(UDataTable* Datatable, const FGameplayTag& Tag);
 
 	void OnXPChanged(int32 NewXP);
+
+	//Updates UI with selected abilities
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag) const;
 };
 
 template<typename T>
