@@ -56,7 +56,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 private:
