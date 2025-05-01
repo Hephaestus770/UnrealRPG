@@ -2,12 +2,11 @@
 
 
 #include "AbilitySystem/Abilities/AuraFireBolt.h"
-#include "Aura/Public/AuraGameplayTags.h"
 
 
 FText UAuraFireBolt::GetDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType((Level), FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
@@ -26,7 +25,7 @@ FText UAuraFireBolt::GetDescription(int32 Level)
 			FText::AsNumber(Level),
 			FText::AsNumber(ManaCost),
 			FText::AsNumber(Cooldown),
-			FText::AsNumber(Damage)
+			FText::AsNumber(ScaledDamage)
 		);
 	}
 	else
@@ -47,14 +46,14 @@ FText UAuraFireBolt::GetDescription(int32 Level)
 			FText::AsNumber(ManaCost),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(FMath::Min(Level, NumProjectiles)),
-			FText::AsNumber(Damage)
+			FText::AsNumber(ScaledDamage)
 		);
 	}
 }
 
 FText UAuraFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType((Level), FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 
@@ -73,6 +72,6 @@ FText UAuraFireBolt::GetNextLevelDescription(int32 Level)
 		FText::AsNumber(ManaCost),
 		FText::AsNumber(Cooldown),
 		FText::AsNumber(FMath::Min(Level, NumProjectiles)),
-		FText::AsNumber(Damage)
+		FText::AsNumber(ScaledDamage)
 	);
 }

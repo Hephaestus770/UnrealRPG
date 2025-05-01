@@ -37,12 +37,6 @@ public:
 	FGameplayTag Attributes_Secondary_MaxMana;
 	FGameplayTag Attributes_Secondary_MaxStamina;
 
-	// Resistance Attribute Tags
-	FGameplayTag Attributes_Resistance_Fire;
-	FGameplayTag Attributes_Resistance_Lightning;
-	FGameplayTag Attributes_Resistance_Arcane;
-	FGameplayTag Attributes_Resistance_Physical;
-
 	// Meta Attribute Tags
 	FGameplayTag Attributes_Meta_IncomingXP;
 
@@ -65,6 +59,20 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
+	// Resistance Attribute Tags
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
+
+
+	// Debuff Attribute Tags
+	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Stun;
+	FGameplayTag Debuff_Physical;
+	FGameplayTag Debuff_Arcane;
+
+
 	//Ability Tags
 	FGameplayTag Abilities_None;
 	FGameplayTag Abilities_Attack;
@@ -74,8 +82,10 @@ public:
 	FGameplayTag Abilities_Fire_Firebolt;
 	FGameplayTag Abilities_Lightning_Electrocute;
 
+
 	//Cooldown Tags
 	FGameplayTag Cooldown_Fire_Firebolt;
+
 
 	//Ability Status Tags
 	FGameplayTag Abilities_Status_Locked;
@@ -83,10 +93,12 @@ public:
 	FGameplayTag Abilities_Status_Unlocked;
 	FGameplayTag Abilities_Status_Equipped;
 
+
 	//Ability Type Tags
 	FGameplayTag Abilities_Type_Offensive;
 	FGameplayTag Abilities_Type_Passive;
 	FGameplayTag Abilities_Type_None;
+
 
 	//Socket Tags
 	FGameplayTag CombatSocket_Weapon;
@@ -95,8 +107,8 @@ public:
 	FGameplayTag CombatSocket_LeftHand;
 	FGameplayTag CombatSocket_Tail;
 
-	// Montage Tags
 
+	// Montage Tags
 	FGameplayTag Montage_End;
 	FGameplayTag Montage_Attack_1;
 	FGameplayTag Montage_Attack_2;
@@ -107,7 +119,7 @@ public:
 
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
-
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 
 	// Combat Tags
 
