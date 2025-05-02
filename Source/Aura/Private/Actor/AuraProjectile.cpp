@@ -49,59 +49,45 @@ void AAuraProjectile::BeginPlay()
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent(), NAME_None, FVector::ZeroVector, EAttachLocation::KeepRelativeOffset, true);
 
 }
+
+void AAuraProjectile::OnHit()
+{
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+	if (LoopingSoundComponent) LoopingSoundComponent->Stop();
+	bDidHit = true;
+}
+
 void AAuraProjectile::Destroyed()
 {
-	if (!bDidHit && !HasAuthority())
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		if (LoopingSoundComponent)
-		{
-			LoopingSoundComponent->Stop();
-		}
-		bDidHit = true;
-	}
-
+	
+	if (!bDidHit && !HasAuthority()) OnHit();
 	Super::Destroyed();
 }
 
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 									  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-	if (!DamageEffectSpecHandle.Data.IsValid() || DamageEffectSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser() == OtherActor)
-	{
-		return;
-	}
-/*
-// Ignore this projectile's Owner (replicated property) which we set to the spawning ability's Avatar Actor through UWorld::SpawnActorDeferred().
-	if (OtherActor == GetOwner()) 
-		return;
-*/
-	
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser(), OtherActor))
-		return;
-	
+	AActor* ThisOwner = GetOwner();
 
-	if (!bDidHit)
+	// Ignore the Owner.
+	if (OtherActor == ThisOwner)
+		return;
+	// Prevent friendly fire.
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(ThisOwner, OtherActor))
+		return;
+	// Ensure projectile overlaps once
+	if (!bDidHit) 
+		OnHit();
+
+	if (HasAuthority())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		if (LoopingSoundComponent)
-		{
-			LoopingSoundComponent->Stop();
-		}
-		bDidHit = true;
-	}
-	
-	// NOTE: We are setting DamageEffectSpecHandle (not replicated) only in the server while spawning this projectile.
-	if (HasAuthority() && DamageEffectSpecHandle != nullptr)
-	{
-			
+		// NOTE: DamageEffectParams should be valid only on the server (we set it there, but also don't replicate it).
+		check(DamageEffectParams.SourceAbilitySystemComponent);
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)) // does overlaaping component has ASC?
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
-
+			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 		Destroy();
 	}
