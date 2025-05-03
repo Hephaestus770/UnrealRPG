@@ -20,5 +20,5 @@ public:
 
 protected:
 	
-	virtual void StartInitialLoading() override;
+	//virtual void StartInitialLoading() override;
 };

@@ -14,7 +14,7 @@ UAuraAssetManager& UAuraAssetManager::Get()
 	return *AuraAssetManager;
 
 }
-
+/*
 void UAuraAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
@@ -24,3 +24,4 @@ void UAuraAssetManager::StartInitialLoading()
 	UAbilitySystemGlobals::Get().InitGlobalData();
 	
 }
+*/

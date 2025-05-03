@@ -397,5 +397,5 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 
 
-
+	GameplayTags.bInitialized = true;
 }
