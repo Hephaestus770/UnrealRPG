@@ -398,4 +398,5 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 
 	GameplayTags.bInitialized = true;
+	UE_LOG(LogTemp, Warning, TEXT("Initializing tags..."));
 }

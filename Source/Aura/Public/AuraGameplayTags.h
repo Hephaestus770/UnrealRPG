@@ -18,7 +18,6 @@ public:
 		if (!GameplayTags.bInitialized)
 		{
 			InitializeNativeGameplayTags();
-			UE_LOG(LogTemp, Warning, TEXT("Initializing tags..."));
 		}
 		return GameplayTags;
 	}
