@@ -186,6 +186,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		Damage = Damage + DamageTypeValue;
 	}
 
+	// Only apply critical hit and blocking logic if NOT a debuff
 	if (!bIsDebuff)
 	{
 		// Capture BlockChance on Target and determine if there was a successful Block
