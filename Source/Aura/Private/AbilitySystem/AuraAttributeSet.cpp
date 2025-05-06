@@ -256,11 +256,12 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 
 	// Use execution calc instead of direct modifier
 	FGameplayEffectExecutionDefinition Execution;
-	Execution.CalculationClass = UExecCalc_Damage::StaticClass(); // You must implement this class
+	Execution.CalculationClass = UExecCalc_Damage::StaticClass(); 
 	Effect->Executions.Add(Execution);
 
-	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
 
+	// Apply the debuff tag
+	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
 	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer TagContainer;
 	TagContainer.Added.AddTag(DebuffTag);
@@ -270,16 +271,6 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount = 1;
-/*
-	int32 Index = Effect->Modifiers.Num();
-	Effect->Modifiers.Add(FGameplayModifierInfo());
-	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
-
-
-	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
-	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
-*/
 
 	FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f);
 	if (MutableSpec)
