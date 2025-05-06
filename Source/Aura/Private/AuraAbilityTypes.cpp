@@ -48,15 +48,15 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 		{
 			RepBits |= 1 << 9;
 		}
-		if (DebuffDamage > 0.f)
+		if (!FMath::IsNearlyZero(DebuffDamage))
 		{
 			RepBits |= 1 << 10;
 		}
-		if (DebuffDuration > 0.f)
+		if (!FMath::IsNearlyZero(DebuffDuration))
 		{
 			RepBits |= 1 << 11;
 		}
-		if (DebuffFrequency > 0.f)
+		if (!FMath::IsNearlyZero(DebuffFrequency))
 		{
 			RepBits |= 1 << 12;
 		}

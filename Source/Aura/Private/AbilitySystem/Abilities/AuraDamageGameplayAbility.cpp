@@ -4,7 +4,10 @@
 #include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Aura/Public/AuraGameplayTags.h"
 
+
+/*
 void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
@@ -16,6 +19,41 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
 
 
+}
+*/
+
+void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
+{
+	if (!TargetActor) return;
+
+	// Get full params, including debuffs
+	FDamageEffectParams Params = MakeDamageEffectParamsFromClassDefaults(TargetActor);
+
+	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(Params.DamageGameplayEffectClass, Params.AbilityLevel);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, Params.DamageType, Params.BaseDamage);
+
+	if (!FMath::IsNearlyZero(Params.DebuffChance))
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Chance, Params.DebuffChance);
+	}
+	if (!FMath::IsNearlyZero(Params.DebuffDamage))
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Damage, Params.DebuffDamage);
+	}
+	if (!FMath::IsNearlyZero(Params.DebuffFrequency))
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Frequency, Params.DebuffFrequency);
+	}
+	if (!FMath::IsNearlyZero(Params.DebuffDuration))
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Duration, Params.DebuffDuration);
+	}
+
+	Params.SourceAbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+		*DamageSpecHandle.Data,
+		Params.TargetAbilitySystemComponent
+	);
 }
 
 FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor)
