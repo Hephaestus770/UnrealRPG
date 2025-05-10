@@ -9,6 +9,7 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuraCharacterBase.generated.h"
 
+class UDebuffNiagaraComponent;
 class UAbilitySystemComponent;
 class UAttributeSet;
 class UGameplayEffect;
@@ -44,7 +45,12 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual FOnASCRegistered GetOnASCRegisteredDelegate() override;
+	virtual FOnDeath GetOnDeathDelegate() override;
 	// end Combat Interface
+
+	FOnASCRegistered OnAscRegistered;
+	FOnDeath OnDeath;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
@@ -129,6 +135,12 @@ protected:
 	//Class Type
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debuffs")
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debuffs")
+	FName SocketNameToAttach = NAME_None;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

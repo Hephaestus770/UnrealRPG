@@ -6,11 +6,26 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Aura/Aura.h"
 AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuffComponent");
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	// ALTERNATIVE WAY TO ATTACH BURN EFFECT 
+	/*
+	if (BurnDebuffComponent && SocketNameToAttach != NAME_None)
+	{
+		// Attach to the specified socket at runtime
+		BurnDebuffComponent->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNameToAttach);
+	}
+	*/
+	BurnDebuffComponent->bEditableWhenInherited = true; // This unlocks the socket in BP
+	BurnDebuffComponent->DebuffTag = GameplayTags.Debuff_Burn;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false); // This fixes effects not applying two times
@@ -53,6 +68,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissolve();
 	bDead = true;
+	OnDeath.Broadcast(this);
 }
 
 void AAuraCharacterBase::Die()
@@ -142,6 +158,16 @@ void AAuraCharacterBase::IncrementMinionCount_Implementation(int32 Amount)
 ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 {
 	return CharacterClass;
+}
+
+FOnASCRegistered AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnAscRegistered;
+}
+
+FOnDeath AAuraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()
