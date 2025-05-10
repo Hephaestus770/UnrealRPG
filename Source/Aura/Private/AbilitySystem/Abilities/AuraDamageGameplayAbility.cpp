@@ -6,54 +6,40 @@
 #include "AbilitySystemComponent.h"
 #include "Aura/Public/AuraGameplayTags.h"
 
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "DrawDebugHelpers.h"
 
-/*
-void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
-{
-	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
-
-	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ScaledDamage);
-
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),
-		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
-
-
-}
-*/
 
 void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 {
 	if (!TargetActor) return;
 
-	// Get full params, including debuffs
+	// Get params
 	FDamageEffectParams Params = MakeDamageEffectParamsFromClassDefaults(TargetActor);
 
-	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(Params.DamageGameplayEffectClass, Params.AbilityLevel);
+	// Calculate direction from attacker to target
+	FVector Direction = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).GetSafeNormal();
 
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, Params.DamageType, Params.BaseDamage);
+	// Calculate death impulse
+	FVector DeathImpulse = Direction * Params.DeathImpulseMagnitude;
 
-	if (!FMath::IsNearlyZero(Params.DebuffChance))
+	// Debug visualization of Death Impulse
+	/*
+	if (GEngine && GEngine->GetWorldFromContextObject(GetAvatarActorFromActorInfo(), EGetWorldErrorMode::LogAndReturnNull))
 	{
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Chance, Params.DebuffChance);
-	}
-	if (!FMath::IsNearlyZero(Params.DebuffDamage))
-	{
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Damage, Params.DebuffDamage);
-	}
-	if (!FMath::IsNearlyZero(Params.DebuffFrequency))
-	{
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Frequency, Params.DebuffFrequency);
-	}
-	if (!FMath::IsNearlyZero(Params.DebuffDuration))
-	{
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, FAuraGameplayTags::Get().Debuff_Duration, Params.DebuffDuration);
-	}
+		FVector StartLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+		FVector EndLocation = StartLocation + DeathImpulse;
 
-	Params.SourceAbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
-		*DamageSpecHandle.Data,
-		Params.TargetAbilitySystemComponent
-	);
+		// Draw a debug arrow to represent the Death Impulse
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.f, 0, 2.f);
+	}
+	*/
+
+	// Update damage effect params with the calculated death impulse
+	Params.DeathImpulse = DeathImpulse;
+
+	// Apply the damage effect
+	UAuraAbilitySystemLibrary::ApplyDamageEffect(Params);
 }
 
 FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor)
@@ -71,6 +57,7 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 	Params.DebuffDamage = DebuffDamage.GetValueAtLevel(GetAbilityLevel());
 	Params.DebuffDuration = DebuffDuration;
 	Params.DebuffFrequency = DebuffFrequency;
+	Params.DeathImpulseMagnitude = DeathImpulseMagnitude;
 
 	return Params;
 

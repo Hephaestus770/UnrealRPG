@@ -166,12 +166,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
+		
 		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		HandleIncomingDamage(Props);
+		const bool bisDot = Data.EffectSpec.GetPeriod() > 0.f;
+		HandleIncomingDamage(Props, bisDot);
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
@@ -181,7 +183,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 }
 
 
-void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
+void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, bool bDot)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
 	SetIncomingDamage(0.f); // Consumed the data
@@ -190,6 +192,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
+
 		const bool bFatal = NewHealth <= 0.f; // check to if fatal damage
 		if (bFatal)
 		{
@@ -197,11 +200,11 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
 			if (CombatInterface)
 			{
-				CombatInterface->Die();
+				CombatInterface->Die(UAuraAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
 			}
 			SendXPEvent(Props); // Send XP when Enemy dies
 		}
-		else // if it's not gonna die, do hit react
+		else if(!bDot)// if actor is not gonna die and damage is not dot damage then do hit react
 		{
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
@@ -277,7 +280,6 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	{
 		// Set damage value for ExecCalc_Damage to read
 		MutableSpec->SetSetByCallerMagnitude(DamageType, DebuffDamage);
-
 		// Pass along the debuff damage type to your custom effect context
 		if (FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(MutableSpec->GetContext().Get()))
 		{
