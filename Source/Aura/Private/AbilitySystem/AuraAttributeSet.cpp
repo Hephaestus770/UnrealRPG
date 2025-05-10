@@ -14,7 +14,7 @@
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "AuraAbilityTypes.h"
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 
@@ -204,12 +204,20 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			}
 			SendXPEvent(Props); // Send XP when Enemy dies
 		}
-		else if(!bDot)// if actor is not gonna die and damage is not dot damage then do hit react
+		else if(!bDot)// if actor is not gonna die and damage is not DoT damage then, do hit react & Knockback
 		{
+			// Hit React
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
 			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 
+			// KnockBack
+			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, false);
+				Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
+			}
 		}
 
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);

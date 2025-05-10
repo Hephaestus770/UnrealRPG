@@ -16,27 +16,32 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 
 	// Get params
 	FDamageEffectParams Params = MakeDamageEffectParamsFromClassDefaults(TargetActor);
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 
 	// Calculate direction from attacker to target
-	FVector Direction = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).GetSafeNormal();
+	FVector Direction = (TargetActor->GetActorLocation() - AvatarActor->GetActorLocation()).GetSafeNormal();
+	if (Direction.IsNearlyZero())
+	{
+		Direction = AvatarActor->GetActorForwardVector().GetSafeNormal(); // Zero Vector Edge Case
+	}
 
 	// Calculate death impulse
 	FVector DeathImpulse = Direction * Params.DeathImpulseMagnitude;
 
-	// Debug visualization of Death Impulse
-	/*
-	if (GEngine && GEngine->GetWorldFromContextObject(GetAvatarActorFromActorInfo(), EGetWorldErrorMode::LogAndReturnNull))
-	{
-		FVector StartLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
-		FVector EndLocation = StartLocation + DeathImpulse;
-
-		// Draw a debug arrow to represent the Death Impulse
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.f, 0, 2.f);
-	}
-	*/
-
-	// Update damage effect params with the calculated death impulse
 	Params.DeathImpulse = DeathImpulse;
+
+	const bool bKnockback = FMath::RandRange(1, 100) < Params.KnockbackChance;
+	if (bKnockback)
+	{
+		// Create a rotation with a 45-degree upward pitch to mimic projectile knockback
+		FRotator KnockbackRotation = Direction.Rotation();
+		KnockbackRotation.Pitch = 45.f; // Tilt the direction upward, remove this for just pushback. Value Can Be Configurable!!!
+
+		// Calculate knockback force using the rotated direction
+		const FVector KnockbackDirection = KnockbackRotation.Vector();
+		const FVector KnockbackForce = KnockbackDirection * Params.KnockbackForceMagnitude;
+		Params.KnockbackForce = KnockbackForce;
+	}
 
 	// Apply the damage effect
 	UAuraAbilitySystemLibrary::ApplyDamageEffect(Params);
@@ -58,6 +63,8 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 	Params.DebuffDuration = DebuffDuration;
 	Params.DebuffFrequency = DebuffFrequency;
 	Params.DeathImpulseMagnitude = DeathImpulseMagnitude;
+	Params.KnockbackForceMagnitude = KnockbackForceMagnitude;
+	Params.KnockbackChance = KnockbackChance;
 
 	return Params;
 
