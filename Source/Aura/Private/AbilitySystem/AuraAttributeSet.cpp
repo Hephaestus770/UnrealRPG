@@ -215,8 +215,8 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{
-				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, false);
 				Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, false);
 			}
 		}
 

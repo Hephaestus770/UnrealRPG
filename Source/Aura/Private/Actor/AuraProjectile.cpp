@@ -38,6 +38,7 @@ AAuraProjectile::AAuraProjectile()
 void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	SetReplicateMovement(true);
 	if (!HasAuthority())
 	{
 		AActor* ThisOwner = GetOwner();
