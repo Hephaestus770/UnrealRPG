@@ -34,6 +34,8 @@ public:
 
 	bool bStartupAbilitiesGiven = false; // Purpose of this: First abilities will be given then delegate bindings in overlay widget will happen
 
+
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ForEachAbility(const FForEachAbility& Delegate);

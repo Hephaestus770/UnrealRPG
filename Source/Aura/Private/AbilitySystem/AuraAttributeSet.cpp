@@ -216,9 +216,10 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{
 				Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
-				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, false);
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
 			}
 		}
+
 
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
