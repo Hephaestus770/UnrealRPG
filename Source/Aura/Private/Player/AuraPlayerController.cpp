@@ -12,6 +12,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Containers/Set.h"
+#include "Engine/BlockingVolume.h"   // For ABlockingVolume
+#include "Components/BrushComponent.h"
+
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -204,41 +207,55 @@ void AAuraPlayerController::SyncOccludedActors()
 
 bool AAuraPlayerController::HideOccludedActor(const AActor* Actor)
 {
-	FCameraOccludedActor* ExistingOccludedActor = OccludedActors.Find(Actor);
+	if (!Actor) return false;
 
+	UPrimitiveComponent* ComponentToOcclude = nullptr;
+	TArray<UMaterialInterface*> OriginalMaterials;
+	ECollisionResponse OriginalResponse = ECR_Block; // Default, will be overwritten
+
+	// Check if it's a blocking volume
+	if (const ABlockingVolume* BlockingVolume = Cast<ABlockingVolume>(Actor))
+	{
+		ComponentToOcclude = BlockingVolume->GetBrushComponent();
+	}
+	// Otherwise, check for a static mesh component
+	else if (UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass())))
+	{
+		ComponentToOcclude = StaticMesh;
+		OriginalMaterials = StaticMesh->GetMaterials();
+	}
+
+	if (!ComponentToOcclude) return false; // No relevant component found
+
+	// Get the original visibility response
+	OriginalResponse = ComponentToOcclude->GetCollisionResponseToChannel(ECC_Visibility);
+
+	FCameraOccludedActor* ExistingOccludedActor = OccludedActors.Find(Actor);
 	if (ExistingOccludedActor && ExistingOccludedActor->IsOccluded)
 	{
-		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s was already occluded. Ignoring."),
-			*Actor->GetName());
+		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s was already occluded. Ignoring."), *Actor->GetName());
 		return false;
 	}
-	
-	UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-	if (!StaticMesh) return false; // Early exit if no static mesh
 
-	if (ExistingOccludedActor && IsValid(ExistingOccludedActor->Actor))
+	FCameraOccludedActor OccludedActor;
+	OccludedActor.Actor = Actor;
+	OccludedActor.Component = ComponentToOcclude;
+	OccludedActor.OriginalVisibilityResponse = OriginalResponse;
+	OccludedActor.OriginalMaterials = OriginalMaterials;
+	OccludedActor.IsOccluded = true;
+
+	if (ExistingOccludedActor)
 	{
-		ExistingOccludedActor->IsOccluded = true;
-		OnHideOccludedActor(*ExistingOccludedActor);
-
-		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s exists, but was not occluded. Occluding it now."), *Actor->GetName());
+		*ExistingOccludedActor = OccludedActor;
+		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s exists, updating occlusion."), *Actor->GetName());
 	}
 	else
 	{
-		//UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(
-			//Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-
-		FCameraOccludedActor OccludedActor;
-		OccludedActor.Actor = Actor;
-		OccludedActor.StaticMesh = StaticMesh;
-		OccludedActor.Materials = StaticMesh->GetMaterials();
-		OccludedActor.IsOccluded = true;
 		OccludedActors.Add(Actor, OccludedActor);
-		OnHideOccludedActor(OccludedActor);
-
-		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s does not exist, creating and occluding it now."), *Actor->GetName());
+		if (DebugLineTraces) UE_LOG(LogTemp, Warning, TEXT("Actor %s added and occluded."), *Actor->GetName());
 	}
 
+	OnHideOccludedActor(OccludedActor);
 	return true;
 }
 
@@ -269,22 +286,36 @@ void AAuraPlayerController::ShowOccludedActor(FCameraOccludedActor& OccludedActo
 
 bool AAuraPlayerController::OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const
 {
-	for (int matIdx = 0; matIdx < OccludedActor.Materials.Num(); ++matIdx)
+	if (!OccludedActor.Component) return false;
+
+	// Restore materials only for static meshes
+	if (UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(OccludedActor.Component))
 	{
-		OccludedActor.StaticMesh->SetMaterial(matIdx, OccludedActor.Materials[matIdx]);
+		for (int i = 0; i < OccludedActor.OriginalMaterials.Num(); ++i)
+		{
+			StaticMesh->SetMaterial(i, OccludedActor.OriginalMaterials[i]);
+		}
 	}
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	// Restore original visibility response
+	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Visibility, OccludedActor.OriginalVisibilityResponse);
 	return true;
 }
 
 bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const
 {
-	for (int i = 0; i < OccludedActor.StaticMesh->GetNumMaterials(); ++i)
+	if (!OccludedActor.Component) return false;
+
+	// Apply fade material only to static meshes
+	if (UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(OccludedActor.Component))
 	{
-		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
+		for (int i = 0; i < StaticMesh->GetNumMaterials(); ++i)
+		{
+			StaticMesh->SetMaterial(i, FadeMaterial);
+		}
 	}
 
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-
+	// Set visibility response to ignore for all components
+	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 	return true;
 }

@@ -23,6 +23,18 @@ USTRUCT(BlueprintType)
 struct FCameraOccludedActor
 {
 	GENERATED_USTRUCT_BODY()
+
+	const AActor* Actor;
+	UPrimitiveComponent* Component; // Handles UStaticMeshComponent or UBrushComponent
+	ECollisionResponse OriginalVisibilityResponse; // Stores original ECC_Visibility response
+	TArray<UMaterialInterface*> OriginalMaterials; // Only for static meshes
+	bool IsOccluded;
+};
+/*
+
+struct FCameraOccludedActor
+{
+	GENERATED_USTRUCT_BODY()
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	const AActor* Actor;
 
@@ -35,7 +47,7 @@ struct FCameraOccludedActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsOccluded;
 };
-
+*/
 /**
  * 
  */
