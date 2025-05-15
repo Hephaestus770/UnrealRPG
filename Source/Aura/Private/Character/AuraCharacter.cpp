@@ -79,27 +79,6 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 	check(AuraPlayerState);
 	AuraPlayerState->AddToSpellPoints(InSpellPoints);
 }
-/*
-void AAuraCharacter::LevelUp_Implementation()
-{
-	
-}
-
-
-int32 AAuraCharacter::GetXP_Implementation() const
-{
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->GetXP();
-}
-
-int32 AAuraCharacter::FindLevelForXP_Implementation(int32 InXP) const
-{
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->LevelUpInfo->FindLevelForXP(InXP);
-}
-*/
 
 int32 AAuraCharacter::GetPlayerLevel_Implementation()
 {

@@ -14,6 +14,7 @@
 #include "Containers/Set.h"
 #include "Engine/BlockingVolume.h"   // For ABlockingVolume
 #include "Components/BrushComponent.h"
+#include "AuraGameplayTags.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -47,7 +48,15 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 
 void AAuraPlayerController::CursorTrace()
 {
-
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		// if cursor trace blocked while we were holding curson on a actor, we should unhighligh it!
+		if (ThisActor) ThisActor->UnHighlightActor();
+		if (LastActor) LastActor->UnHighlightActor();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		return;
+	}
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
@@ -56,14 +65,19 @@ void AAuraPlayerController::CursorTrace()
 
 	if (LastActor != ThisActor)
 	{
-		if (ThisActor) ThisActor->HighlightActor();
 		if (LastActor) LastActor->UnHighlightActor();
+		if (ThisActor) ThisActor->HighlightActor();
 	}
 
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
+
 	if (GetASC())
 	{
 		GetASC()->AbilityInputTagPressed(InputTag);
@@ -72,6 +86,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
+
 	if (GetASC() == nullptr) return; // GetASC can retun nullptr
 
 	GetASC()->AbilityInputTagReleased(InputTag);
@@ -79,6 +98,10 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
+	{
+		return;
+	}
 	if (GetASC() == nullptr) return;
 
 	GetASC()->AbilityInputTagHeld(InputTag);
@@ -137,6 +160,10 @@ void AAuraPlayerController::SetupInputComponent()
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 
 	const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
