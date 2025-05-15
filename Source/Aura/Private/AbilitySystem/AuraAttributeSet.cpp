@@ -145,7 +145,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	SetEffectProperties(Data, Props);
 
 	// If actor is dead, don't do any damage, hit react etc.
-	if (Props.TargetCharacter->Implements<UCombatInterface>())
+	if (Props.TargetCharacter && Props.TargetCharacter->Implements<UCombatInterface>())
 	{
 		if (ICombatInterface::Execute_IsDead(Props.TargetCharacter))
 		{

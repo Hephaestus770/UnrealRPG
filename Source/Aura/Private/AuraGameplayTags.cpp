@@ -182,6 +182,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Tag granted when Hit Reacting")
 	);
 
+	GameplayTags.Abilities_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Knockback"),
+		FString("Tag granted when Knockback")
+	);
+
 	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Summon"),
 		FString("Summon Ability Tag")
