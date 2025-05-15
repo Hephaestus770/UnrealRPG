@@ -220,14 +220,12 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			}
 		}
 
-
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
 		if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
 		{
 			// Handle Debuff
-			UE_LOG(LogTemp, Warning, TEXT("DEBUFF APPLIED"));
 			Debuff(Props);
 		}
 	}
