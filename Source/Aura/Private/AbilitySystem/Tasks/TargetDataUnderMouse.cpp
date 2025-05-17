@@ -53,7 +53,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 
 	if(APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get())
 	{
-		PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHitResult);
+		PC->GetHitResultUnderCursor(ECC_Target, false, CursorHitResult);
 	}
 
 

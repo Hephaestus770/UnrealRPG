@@ -15,7 +15,7 @@
 #include "Engine/BlockingVolume.h"   // For ABlockingVolume
 #include "Components/BrushComponent.h"
 #include "AuraGameplayTags.h"
-
+#include "Aura/Aura.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -325,7 +325,7 @@ bool AAuraPlayerController::OnShowOccludedActor(const FCameraOccludedActor& Occl
 	}
 
 	// Restore original visibility response
-	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Visibility, OccludedActor.OriginalVisibilityResponse);
+	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Target, OccludedActor.OriginalVisibilityResponse);
 	return true;
 }
 
@@ -343,6 +343,6 @@ bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& Occl
 	}
 
 	// Set visibility response to ignore for all components
-	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	OccludedActor.Component->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
 	return true;
 }

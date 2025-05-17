@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include <Interaction/PlayerInterface.h>
 
 FText UAuraFireBolt::GetDescription(int32 Level)
 {
@@ -118,11 +119,14 @@ void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, co
 		// For Homing Projectiles
 		if (bHomingProjectile)
 		{
-			Projectile->ProjectileMovement->bIsHomingProjectile = true;
-			Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
-
-			if (HomingTarget && HomingTarget->Implements<UCombatInterface>()) // HomingTarget is valid and implements the interface
+			
+			if (HomingTarget && !HomingTarget->Implements<UPlayerInterface>())
 			{
+				Projectile->ProjectileMovement->bIsHomingProjectile = true;
+				Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
+			}
+			if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
+			{	
 				Projectile->ProjectileMovement->HomingTargetComponent = HomingTarget->GetRootComponent();
 			}
 			else
