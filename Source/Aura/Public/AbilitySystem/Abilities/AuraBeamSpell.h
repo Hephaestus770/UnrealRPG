@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void TraceFirstTarget(const FVector& BeamtTargetLocation);
 
+	UFUNCTION(BlueprintCallable)
+	void StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
@@ -38,6 +41,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
 	TObjectPtr<ACharacter> OwnerCharacter;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Beam")
 	FName TraceStartSocketName;
+
+	/** Radius around hit for additional targets, scalable per ability level */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
+	FScalableFloat Radius;
+
+	/** Maximum number of shock targets, scalable per ability level */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
+	FScalableFloat MaxTargets;
+
+
 };

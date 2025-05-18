@@ -5,7 +5,10 @@
 
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include <Interaction/CombatInterface.h>
+#include "Interaction/CombatInterface.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Curves/RealCurve.h"
+
 
 void UAuraBeamSpell::StoreMouseDataInfo(const FHitResult& HitResult)
 {
@@ -73,4 +76,39 @@ void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamtTargetLocation)
 
 		}
 	}
+}
+
+void UAuraBeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets)
+{
+	if (!MouseHitActor)
+	{
+		return;
+	}
+
+	// Evaluate radius and max targets from scalable floats
+	const float EvalRadius = Radius.GetValueAtLevel(GetAbilityLevel());
+	const int32 EvalMaxTargets = FMath::RoundToInt(MaxTargets.GetValueAtLevel(GetAbilityLevel()));
+
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(GetAvatarActorFromActorInfo());
+	ActorsToIgnore.Add(MouseHitActor);
+
+	TArray<AActor*> OverlappingActors;
+
+	UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(
+		GetAvatarActorFromActorInfo(), 
+		OverlappingActors, 
+		ActorsToIgnore, 
+		EvalRadius, 
+		MouseHitActor->GetActorLocation());
+
+	// Remove any actors tagged "Player"
+	OverlappingActors.RemoveAllSwap(
+		[](AActor* A)
+	{
+		return A && A->ActorHasTag("Player");
+	});
+
+	UAuraAbilitySystemLibrary::GetClosestTargets(EvalMaxTargets, OverlappingActors, OutAdditionalTargets, MouseHitActor->GetActorLocation());
+
 }
