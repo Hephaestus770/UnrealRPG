@@ -119,12 +119,9 @@ void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, co
 		// For Homing Projectiles
 		if (bHomingProjectile)
 		{
+			Projectile->ProjectileMovement->bIsHomingProjectile = true;
+			Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
 			
-			if (HomingTarget && !HomingTarget->Implements<UPlayerInterface>())
-			{
-				Projectile->ProjectileMovement->bIsHomingProjectile = true;
-				Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
-			}
 			if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
 			{	
 				Projectile->ProjectileMovement->HomingTargetComponent = HomingTarget->GetRootComponent();
