@@ -202,6 +202,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Electrocute Ability Tag")
 	);
 
+	GameplayTags.Abilities_NoCrit = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.NoCrit"),
+		FString("This Ability Can't Do Critical Damage")
+	);
+
 	// ABILITIES STATUS
 
 	GameplayTags.Abilities_Status_Eligible = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -248,6 +253,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Fire.Firebolt"),
 		FString("Firebolt Cooldown Tag")
+	);
+
+	GameplayTags.Cooldown_Lightning_Electrocute= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Lightning.Electrocute"),
+		FString("Electrocute Cooldown Tag")
 	);
 	
 

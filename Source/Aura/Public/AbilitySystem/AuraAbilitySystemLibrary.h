@@ -16,7 +16,6 @@ class USpellMenuWidgetController;
 class UAbilityInfo;
 struct UFWidgetControllerParams;
 struct FDamageEffectParams;
-
 /**
  * 
  */

@@ -33,6 +33,8 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 }
 
+// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE
+/*
 void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
@@ -45,6 +47,8 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 	}
 
 }
+*/
+
 
 void AAuraPlayerController::CursorTrace()
 {

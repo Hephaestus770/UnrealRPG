@@ -381,26 +381,57 @@ bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondAc
 	return !bFriends;
 }
 
+
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
 {
+	// Validate your source ASC
+	UAbilitySystemComponent* SourceASC = DamageEffectParams.SourceAbilitySystemComponent;
+	if (!SourceASC)
+	{
+		return FGameplayEffectContextHandle();
+	}
+
+	TSubclassOf<UGameplayEffect> DamageGEClass = DamageEffectParams.DamageGameplayEffectClass;
+
+	// Build the context safely
+	FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
+	if (AActor* SourceAvatar = SourceASC->GetAvatarActor())
+	{
+		EffectContext.AddSourceObject(SourceAvatar);
+	}
+
+	// Make the outgoing spec
+	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(
+		DamageGEClass,
+		DamageEffectParams.AbilityLevel,
+		EffectContext
+	);
+
+	if (!SpecHandle.IsValid() || !SpecHandle.Data.IsValid())
+	{
+		return EffectContext;
+	}
+
+	// Assign your SetByCaller magnitudes
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-
-	FGameplayEffectContextHandle EffectContexthandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
-	EffectContexthandle.AddSourceObject(SourceAvatarActor);
-	SetDeathImpulse(EffectContexthandle, DamageEffectParams.DeathImpulse);
-	SetKnockbackForce(EffectContexthandle, DamageEffectParams.KnockbackForce);
-
-	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContexthandle);
-
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
 
-	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
-	return EffectContexthandle;
+	// Pack impulses
+	SetDeathImpulse(EffectContext, DamageEffectParams.DeathImpulse);
+	SetKnockbackForce(EffectContext, DamageEffectParams.KnockbackForce);
+
+	// Apply to the target ASC if valid
+	UAbilitySystemComponent* TargetASC = DamageEffectParams.TargetAbilitySystemComponent;
+	if (TargetASC)
+	{
+		TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+	
+	return EffectContext;
 }
 
 TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators)
