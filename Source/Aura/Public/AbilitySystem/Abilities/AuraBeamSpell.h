@@ -27,6 +27,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PrimaryTargetDied(AActor* DeadActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AdditionalTargetDied(AActor* DeadActor);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveOnDeathBindingFromPrimaryTarget();
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveOnDeathBindingFromAdditionalTarget(const TArray<AActor*>& AdditionalTarget);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
@@ -51,6 +63,5 @@ protected:
 	/** Maximum number of shock targets, scalable per ability level */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
 	FScalableFloat MaxTargets;
-
 
 };

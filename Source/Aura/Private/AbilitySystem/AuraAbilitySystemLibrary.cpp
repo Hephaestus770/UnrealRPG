@@ -367,7 +367,6 @@ void UAuraAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray
 	});
 	if (OutClosestTargets.Num() > MaxTargets)
 	{
-		// Remove unwanted actors from the end of the array.
 		OutClosestTargets.RemoveAt(MaxTargets, OutClosestTargets.Num() - MaxTargets);
 	}
 }

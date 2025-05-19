@@ -34,6 +34,8 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	// end Combat Interface
 
+
+
 	//LevelUp VFX
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
@@ -43,5 +45,8 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLevelUpParticles() const;
+
+	virtual void MulticastHandleDeath_Implementation(const FVector& DeathImpulse) override;
+
 
 };

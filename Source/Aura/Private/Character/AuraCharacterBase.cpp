@@ -68,10 +68,18 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true); 
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	Weapon->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Weapon->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	Dissolve();
 	bDead = true;
+	BurnDebuffComponent->Deactivate(); // Remove Burning effect after death
 	OnDeath.Broadcast(this);
 }
 
@@ -169,7 +177,7 @@ FOnASCRegistered AAuraCharacterBase::GetOnASCRegisteredDelegate()
 	return OnAscRegistered;
 }
 
-FOnDeath AAuraCharacterBase::GetOnDeathDelegate()
+FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
 {
 	return OnDeath;
 }

@@ -305,7 +305,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 
 }
 
-// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE
+// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE, IT CRASHES TOO
 /*
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
