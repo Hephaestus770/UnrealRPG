@@ -92,7 +92,6 @@ void UAuraBeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarget
 	{
 		return;
 	}
-
 	// Evaluate radius and max targets from scalable floats
 	const float EvalRadius = Radius.GetValueAtLevel(GetAbilityLevel());
 	const int32 EvalMaxTargets = FMath::RoundToInt(MaxTargets.GetValueAtLevel(GetAbilityLevel()));

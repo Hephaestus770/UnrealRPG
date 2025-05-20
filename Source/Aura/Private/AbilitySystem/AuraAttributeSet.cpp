@@ -221,11 +221,11 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 		}
 
 		// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE
-	   /*
+
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
-	   */
+	
 
 		
 		if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
@@ -306,7 +306,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 }
 
 // THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE, IT CRASHES TOO
-/*
+
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 
@@ -325,7 +325,7 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 	}
 
 }
-*/
+
 
 
 void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
