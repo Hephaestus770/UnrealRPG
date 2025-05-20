@@ -12,6 +12,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
+#include <Interaction/CombatInterface.h>
 
 AAuraProjectile::AAuraProjectile()
 {
@@ -39,6 +40,16 @@ void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SetReplicateMovement(true);
+	// FIXED BUG: If HomingTarget died before the projectile hit him, projectile will become non homing projectile so it can continue to move.
+	if (HasAuthority() && ProjectileMovement->HomingTargetComponent.IsValid())
+	{
+		ICombatInterface* HomingTargetCombatInterface = Cast<ICombatInterface>(ProjectileMovement->HomingTargetComponent->GetOwner());
+		if (HomingTargetCombatInterface)
+		{
+			HomingTargetCombatInterface->GetOnDeathDelegate().AddUniqueDynamic(this, &AAuraProjectile::OnHomingTargetDeath);
+		}
+	}
+
 	if (!HasAuthority())
 	{
 		AActor* ThisOwner = GetOwner();
@@ -117,6 +128,11 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		bDidHit = true;
 	}
+}
+
+void AAuraProjectile::OnHomingTargetDeath(AActor* DeadActor)
+{
+	ProjectileMovement->bIsHomingProjectile = false;
 }
 
 
