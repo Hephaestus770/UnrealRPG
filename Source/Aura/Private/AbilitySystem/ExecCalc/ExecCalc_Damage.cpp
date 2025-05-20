@@ -233,35 +233,39 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
       // Get EffectiveArmor value from CurveTable
       FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"), FString());
       const float EffectiveArmorCurveCoefficient = EffectiveArmorCurve->Eval(TargetPlayerLevel);
-
-	  // Get CriticalHitResistance value from CurveTable
-	  FRealCurve* CriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
-	  const float CriticalHitResistentCoefficient = CriticalHitResistanceCurve->Eval(TargetPlayerLevel);
-		
-	  // Source's Bonus Critical Hit Damage
-	  float SourceCriticalHitDamage = 0.f;
-	  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef, EvaluationParameters, SourceCriticalHitDamage);
-	  SourceCriticalHitDamage = FMath::Max<float>(SourceCriticalHitDamage, 0.f);
 	  
-	  // Target's Critical Hit Resistance
-	  float TargetCriticalHitResistance = 0.f;
-	  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef, EvaluationParameters, TargetCriticalHitResistance);
-	  TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance, 0.f);
-	  
-	  // Determine if it was Critical Hit
-	  float SourceCriticalHitChance = 0.f;
-	  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef, EvaluationParameters, SourceCriticalHitChance);
-	  SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance, 0.f);
-	  
-	  // Source's Crit Chance - Target's Crit Resist
-	  const bool bIsCrit = (SourceCriticalHitChance - (TargetCriticalHitResistance * CriticalHitResistentCoefficient)) > FMath::RandRange(1, 100);
-	  
-	  UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCrit);
-	  
-	  // If Critical hit, Damage = 2*Damage + Critical Hit Damage
-	  if (bIsCrit)
+	  if (!SourceTags->HasTag(GameplayTags.Abilities_NoCrit))
 	  {
-	  	Damage = (Damage * 2.f) + SourceCriticalHitDamage;
+		  // Get CriticalHitResistance value from CurveTable
+		  FRealCurve* CriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
+		  const float CriticalHitResistentCoefficient = CriticalHitResistanceCurve->Eval(TargetPlayerLevel);
+
+		  // Source's Bonus Critical Hit Damage
+		  float SourceCriticalHitDamage = 0.f;
+		  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef, EvaluationParameters, SourceCriticalHitDamage);
+		  SourceCriticalHitDamage = FMath::Max<float>(SourceCriticalHitDamage, 0.f);
+
+		  // Target's Critical Hit Resistance
+		  float TargetCriticalHitResistance = 0.f;
+		  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef, EvaluationParameters, TargetCriticalHitResistance);
+		  TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance, 0.f);
+
+		  // Determine if it was Critical Hit
+		  float SourceCriticalHitChance = 0.f;
+		  ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef, EvaluationParameters, SourceCriticalHitChance);
+		  SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance, 0.f);
+
+		  // Source's Crit Chance - Target's Crit Resist
+		  const bool bIsCrit = (SourceCriticalHitChance - (TargetCriticalHitResistance * CriticalHitResistentCoefficient)) > FMath::RandRange(1, 100);
+
+		  UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCrit);
+
+		  // If Critical hit, Damage = 2*Damage + Critical Hit Damage
+		  if (bIsCrit)
+		  {
+			  Damage = (Damage * 2.f) + SourceCriticalHitDamage;
+		  }
+
 	  }
 	  
       // Armor Penetration ignores a percentage of the Target's Armor

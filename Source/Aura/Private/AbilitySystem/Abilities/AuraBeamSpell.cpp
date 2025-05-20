@@ -9,7 +9,6 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Curves/RealCurve.h"
 
-
 void UAuraBeamSpell::StoreMouseDataInfo(const FHitResult& HitResult)
 {
 	if (HitResult.bBlockingHit)
