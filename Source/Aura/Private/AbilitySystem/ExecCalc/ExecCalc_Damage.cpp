@@ -234,6 +234,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
       FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"), FString());
       const float EffectiveArmorCurveCoefficient = EffectiveArmorCurve->Eval(TargetPlayerLevel);
 	  
+	  // TODO: THIS IS A WORKAROUND, FIND A PROPER SOLUTION FOR THIS!!
 	  if (!SourceTags->HasTag(GameplayTags.Abilities_NoCrit))
 	  {
 		  // Get CriticalHitResistance value from CurveTable

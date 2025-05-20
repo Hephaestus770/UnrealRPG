@@ -172,7 +172,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		const bool bisDot = Data.EffectSpec.GetPeriod() > 0.f;
+		const bool bisDot = Data.EffectSpec.GetPeriod() > 0.f; // Does Damage have a period if it has then damage is a debuff(dot) damage
 		HandleIncomingDamage(Props, bisDot);
 	}
 
@@ -220,14 +220,12 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			}
 		}
 
-		// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE
-
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
-		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
-	
-
 		
+		// THIS METHOD IS BAD FOR ABILITIES LIKE ELECTROCUTE, DEALS CONSTANTLY DAMAGE
+		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
+			
 		if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
 		{
 			// Handle Debuff
@@ -276,14 +274,22 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 
 
 	// Apply the debuff tag
-	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
-	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer TagContainer;
+	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
 	TagContainer.Added.AddTag(DebuffTag);
 	//TagContainer.CombinedTags.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
+	
+	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Stun))
+	{
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_CursorTrace);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputHeld);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputPressed);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
+
+	}
 	Component.SetAndApplyTargetTagChanges(TagContainer);
 
-	
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount = 1;
 
