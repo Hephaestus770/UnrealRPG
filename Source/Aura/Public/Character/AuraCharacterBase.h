@@ -47,7 +47,7 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
-	virtual FOnASCRegistered GetOnASCRegisteredDelegate() override;
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	// end Combat Interface
@@ -63,13 +63,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 300.f;
 
+	// Replicated bool values for Debuff Effects because Debuff is Dynamic GE, tags applied are not replicated!
+
 	UPROPERTY(ReplicatedUsing = OnRep_Stunned, BlueprintReadOnly)  // Replicated because we are gonna use this in Animation BP
 	bool bIsStunned = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Burned, BlueprintReadOnly)  // Replicated because we are gonna use this in Animation BP
+	bool bIsBurned = false;
 
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UFUNCTION()
 	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
 
 protected:
 	virtual void BeginPlay() override;	
@@ -152,11 +160,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
+	// DEBUFF NIAGARA COMPONENTS
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debuffs")
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debuffs")
-	FName SocketNameToAttach = NAME_None;
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
+	// End DEBUFF NIAGARA COMPONENTS
+
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

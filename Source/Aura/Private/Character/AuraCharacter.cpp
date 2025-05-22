@@ -11,6 +11,9 @@
 #include "Aura/Public/Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 #include <AuraGameplayTags.h>
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
+
+
 
 
 
@@ -102,19 +105,42 @@ void AAuraCharacter::OnRep_Stunned()
 		if (bIsStunned)
 		{
 			AuraASC->AddLooseGameplayTags(BlockedTags);
-			AuraASC->CancelAllAbilities();
+			StunDebuffComponent->Activate();
+			// Cancel Abilities have Abilities Tag
+			//const FGameplayTagContainer AbilitiesToCancelTags(GameplayTags.Abilities_Lightning_Electrocute);
+			//const FGameplayTagContainer AbilitiesToIgnoreTags(GameplayTags.Abilities_Passive);
+
+			//AuraASC->CancelAbilities(nullptr, &AbilitiesToIgnoreTags);
+			
 		}
 		else
 		{
 			AuraASC->RemoveLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Deactivate();
+
 		}
 
 	}
 
 }
 
+void AAuraCharacter::OnRep_Burned()
+{
+	if (bIsBurned)
+	{
+		BurnDebuffComponent->Activate();
+	}
+	else
+	{
+		BurnDebuffComponent->Deactivate();
+	}
+
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
+	Super::InitAbilityActorInfo();
+
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);

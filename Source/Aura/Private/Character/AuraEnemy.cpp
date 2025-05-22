@@ -162,6 +162,8 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 
 void AAuraEnemy::InitAbilityActorInfo()
 {
+	Super::InitAbilityActorInfo(); 
+
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	// Register Stun Ability
@@ -183,6 +185,7 @@ void AAuraEnemy::InitializeDefaultAttributes() const
 void AAuraEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	Super::StunTagChanged(CallbackTag, NewCount); // this will take care of the maxwalk speed (if you compared it to hitreact that's why it has no first part)
+	
 	if (AuraAIController && AuraAIController->GetBlackboardComponent())
 	{
 		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bIsStunned);

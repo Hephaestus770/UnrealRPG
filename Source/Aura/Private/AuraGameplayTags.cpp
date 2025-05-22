@@ -167,6 +167,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	// ABILITIES
 
+	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive"),
+		FString("Passive Ability Tag.")
+	);
+
+	GameplayTags.Abilities_CancelOnKnockBack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.CancelOnKnocBack"),
+		FString("Abilities that is gonna be cancelled on knockback")
+	);
+
+
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),
 		FString("None Ability - like nullptr for AbilityTags")

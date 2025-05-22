@@ -40,6 +40,8 @@ public:
 
 	virtual void OnRep_Stunned() override;
 
+	virtual void OnRep_Burned() override;
+
 
 protected:
 	virtual void InitAbilityActorInfo() override;

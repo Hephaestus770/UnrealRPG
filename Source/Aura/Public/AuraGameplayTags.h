@@ -84,6 +84,9 @@ public:
 	FGameplayTag Debuff_Frequency;
 
 	//Ability Tags
+	FGameplayTag Abilities_Passive;
+	FGameplayTag Abilities_CancelOnKnockBack;
+
 	FGameplayTag Abilities_None;
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;

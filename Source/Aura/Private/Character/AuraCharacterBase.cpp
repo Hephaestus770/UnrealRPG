@@ -18,18 +18,14 @@ AAuraCharacterBase::AAuraCharacterBase()
 	PrimaryActorTick.bCanEverTick = false;
 	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 
+	// TODO: FIND AN ALTERNATIVE WAY TO ATTACH NIAGARA EFFECTS 
 	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuffComponent");
 	BurnDebuffComponent->SetupAttachment(GetRootComponent());
-	// ALTERNATIVE WAY TO ATTACH BURN EFFECT 
-	/*
-	if (BurnDebuffComponent && SocketNameToAttach != NAME_None)
-	{
-		// Attach to the specified socket at runtime
-		BurnDebuffComponent->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketNameToAttach);
-	}
-	*/
-	BurnDebuffComponent->bEditableWhenInherited = true; // This unlocks the socket in BP
 	BurnDebuffComponent->DebuffTag = GameplayTags.Debuff_Burn;
+
+	StunDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("StunDebuffComponent");
+	StunDebuffComponent->SetupAttachment(GetRootComponent());
+	StunDebuffComponent->DebuffTag = GameplayTags.Debuff_Stun;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false); // This fixes effects not applying two times
@@ -50,6 +46,7 @@ void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAuraCharacterBase, bIsStunned);
+	DOREPLIFETIME(AAuraCharacterBase, bIsBurned);
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
@@ -91,6 +88,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 	Dissolve();
 	bDead = true;
 	BurnDebuffComponent->Deactivate(); // Remove Burning effect after death
+	StunDebuffComponent->Deactivate();
 	OnDeath.Broadcast(this);
 }
 
@@ -103,11 +101,23 @@ void AAuraCharacterBase::Die(const FVector& DeathImpulse)
 
 void AAuraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	bIsStunned = NewCount > 0;
+	bIsStunned = (NewCount > 0);
 	GetCharacterMovement()->MaxWalkSpeed = bIsStunned ? 0.f : BaseWalkSpeed;
+	
+	if (bIsStunned)
+	{
+		// Cancel everything except passives
+		const FGameplayTagContainer AbilitiesToIgnoreTags(FAuraGameplayTags::Get().Abilities_Passive);
+		GetAbilitySystemComponent()->CancelAbilities(nullptr, &AbilitiesToIgnoreTags);
+	}
 }
 
 void AAuraCharacterBase::OnRep_Stunned()
+{
+
+}
+
+void AAuraCharacterBase::OnRep_Burned()
 {
 
 }
@@ -195,7 +205,7 @@ ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
-FOnASCRegistered AAuraCharacterBase::GetOnASCRegisteredDelegate()
+FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 {
 	return OnAscRegistered;
 }

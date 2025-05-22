@@ -215,6 +215,10 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{
+				// Cancel NOT passive abiliteis before knockback
+				const FGameplayTagContainer AbilitiesToCancelOnKnockback(FAuraGameplayTags::Get().Abilities_CancelOnKnockBack);
+				Props.TargetASC->CancelAbilities(&AbilitiesToCancelOnKnockback);
+
 				Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
 				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
 			}
