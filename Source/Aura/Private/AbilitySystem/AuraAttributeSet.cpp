@@ -283,7 +283,8 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
 	TagContainer.Added.AddTag(DebuffTag);
 	//TagContainer.CombinedTags.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
-	
+
+	// THIS PART NEEDED FOR SERVER(SINGPLAYER)
 	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Stun))
 	{
 		TagContainer.Added.AddTag(GameplayTags.Player_Block_CursorTrace);
@@ -292,6 +293,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
 
 	}
+
 	Component.SetAndApplyTargetTagChanges(TagContainer);
 
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;

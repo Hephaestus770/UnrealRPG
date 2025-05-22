@@ -23,6 +23,9 @@ public:
 	virtual FText GetNextLevelDescription(int32 Level);
 	static FText GetLockedDescription(int32 Level);
 
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
+
 protected:
 
 	// This will get only static value of ManaCost, not suitable for things like Get %10 of current mana or other attribute values

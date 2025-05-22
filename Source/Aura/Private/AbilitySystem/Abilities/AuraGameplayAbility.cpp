@@ -4,7 +4,9 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
-
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AuraGameplayTags.h"
 
 
 FText UAuraGameplayAbility::GetDescription(int32 Level)
@@ -35,6 +37,18 @@ FText UAuraGameplayAbility::GetLockedDescription(int32 Level)
 
     return FText::Format(FText::FromString("<Default>Spell Locked Until Level: {Level}</>"), Args);
 
+}
+
+bool UAuraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+    // BLOCK ABILITIES THAT HAVE "Abilities.NotUsable.OnAir" TAG WHILE IN AIR, THIS WAY NOT EVERY ABILITY IS BLOCKED. BLUEPRINTS DIDN'T WORKED!!!
+    const ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
+    if (Character && Character->GetCharacterMovement()->IsFalling() && AbilityTags.HasTag(FAuraGameplayTags::Get().Abilities_NotUsable_OnAir))
+    {
+        return false;
+    }
+
+    return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 // This will get only static value of ManaCost, not suitable for things like Get %10 of current mana or other attribute values

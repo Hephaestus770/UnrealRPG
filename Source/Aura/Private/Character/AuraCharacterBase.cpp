@@ -109,6 +109,7 @@ void AAuraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 		// Cancel everything except passives
 		const FGameplayTagContainer AbilitiesToIgnoreTags(FAuraGameplayTags::Get().Abilities_Passive);
 		GetAbilitySystemComponent()->CancelAbilities(nullptr, &AbilitiesToIgnoreTags);
+		
 	}
 }
 

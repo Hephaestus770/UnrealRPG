@@ -177,6 +177,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Abilities that is gonna be cancelled on knockback")
 	);
 
+	GameplayTags.Abilities_NotUsable_OnAir = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.NotUsable.OnAir"),
+		FString("Abilities can't be usable on air")
+	);
+
 
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),
