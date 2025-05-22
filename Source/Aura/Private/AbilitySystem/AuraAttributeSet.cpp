@@ -206,10 +206,14 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, boo
 		}
 		else if(!bDot)// if actor is not gonna die and damage is not DoT damage then, do hit react & Knockback
 		{
-			// Hit React
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			// If Character is being shocked(With Electrocute ability) then do not play hit react!!!
+			if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+			{
+				// Hit React
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 
 			// KnockBack
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);

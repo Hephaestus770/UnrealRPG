@@ -50,6 +50,8 @@ public:
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
+	virtual bool IsBeingShocked_Implementation() override;
 	// end Combat Interface
 
 	FOnASCRegistered OnAscRegistered;
@@ -70,6 +72,9 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Burned, BlueprintReadOnly)  // Replicated because we are gonna use this in Animation BP
 	bool bIsBurned = false;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked = false;  // ShockLoop have different animation and sfx, suprasses the hit react
 
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
