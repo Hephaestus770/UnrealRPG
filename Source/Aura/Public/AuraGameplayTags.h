@@ -86,6 +86,7 @@ public:
 	//Ability Tags
 	FGameplayTag Abilities_Passive;
 	FGameplayTag Abilities_CancelOnKnockBack;
+	FGameplayTag Abilities_CancelOnStun;
 	FGameplayTag Abilities_NotUsable_OnAir;
 
 
