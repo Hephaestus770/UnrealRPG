@@ -167,11 +167,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	// ABILITIES
 
-	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Passive"),
-		FString("Passive Ability Tag.")
-	);
-
 	GameplayTags.Abilities_CancelOnKnockBack = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.CancelOnKnocBack"),
 		FString("Abilities that is gonna be cancelled on knockback")
@@ -187,6 +182,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Abilities can't be usable on air")
 	);
 
+	GameplayTags.Abilities_NoCrit = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.NoCrit"),
+		FString("This Ability Can't Do Critical Damage")
+	);
 
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),
@@ -223,10 +222,30 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Electrocute Ability Tag")
 	);
 
-	GameplayTags.Abilities_NoCrit = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.NoCrit"),
-		FString("This Ability Can't Do Critical Damage")
+
+	// Passive Spells
+
+	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive"),
+		FString("Passive Ability Tag.")
 	);
+
+	GameplayTags.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.HaloOfProctetion"),
+		FString("Halo Of Protection Tag")
+	);
+
+	GameplayTags.Abilities_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.LifeSiphon"),
+		FString("Life Siphon Tag")
+	);
+
+	GameplayTags.Abilities_Passive_ManaSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.ManaSiphon"),
+		FString("Mana Siphon Tag")
+	);
+
+
 
 	// ABILITIES STATUS
 

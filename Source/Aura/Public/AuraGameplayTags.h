@@ -84,7 +84,7 @@ public:
 	FGameplayTag Debuff_Frequency;
 
 	//Ability Tags
-	FGameplayTag Abilities_Passive;
+
 	FGameplayTag Abilities_CancelOnKnockBack;
 	FGameplayTag Abilities_CancelOnStun;
 	FGameplayTag Abilities_NotUsable_OnAir;
@@ -97,10 +97,15 @@ public:
 	FGameplayTag Abilities_Knockback;
 	FGameplayTag Abilities_NoCrit;
 
-	
+	// Active Spells
 	FGameplayTag Abilities_Fire_Firebolt;
 	FGameplayTag Abilities_Lightning_Electrocute;
 
+	// Passive Spells
+	FGameplayTag Abilities_Passive;
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+	FGameplayTag Abilities_Passive_LifeSiphon;
+	FGameplayTag Abilities_Passive_ManaSiphon;
 
 	//Cooldown Tags
 	FGameplayTag Cooldown_Fire_Firebolt;
