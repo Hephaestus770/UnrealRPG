@@ -100,6 +100,7 @@ public:
 	// Active Spells
 	FGameplayTag Abilities_Fire_Firebolt;
 	FGameplayTag Abilities_Lightning_Electrocute;
+	FGameplayTag Abilities_Arcane_ArcaneShards;
 
 	// Passive Spells
 	FGameplayTag Abilities_Passive;

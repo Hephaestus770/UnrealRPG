@@ -15,6 +15,8 @@
 #include "Engine/BlockingVolume.h"   // For ABlockingVolume
 #include "Components/BrushComponent.h"
 #include "AuraGameplayTags.h"
+#include "Actor/MagicCircle.h"
+#include "Components/DecalComponent.h"
 #include "Aura/Aura.h"
 
 AAuraPlayerController::AAuraPlayerController()
@@ -30,6 +32,28 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 	
 	CursorTrace();
+	UpdateMagicCircleLocation();
+
+}
+
+void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		if (DecalMaterial != nullptr)
+		{
+			MagicCircle->MagicCircleDecal->SetMaterial(0, DecalMaterial);
+		}
+	}
+}
+
+void AAuraPlayerController::HideMagicCirle()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->Destroy();
+	}
 
 }
 
@@ -47,7 +71,6 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 	}
 
 }
-
 
 
 void AAuraPlayerController::CursorTrace()
@@ -74,6 +97,7 @@ void AAuraPlayerController::CursorTrace()
 	}
 
 }
+
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
@@ -118,6 +142,14 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 		AuraAbilitySystemCompoent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
 	}
 	return AuraAbilitySystemCompoent;
+}
+
+void AAuraPlayerController::UpdateMagicCircleLocation()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+	}
 }
 
 

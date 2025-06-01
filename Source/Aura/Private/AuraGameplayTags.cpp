@@ -212,6 +212,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Summon Ability Tag")
 	);
 
+	/*
+	*	Offensive Abilities
+	*/
 	GameplayTags.Abilities_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Fire.Firebolt"),
 		FString("Firebolt Ability Tag")
@@ -222,9 +225,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Electrocute Ability Tag")
 	);
 
+	GameplayTags.Abilities_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Arcane.ArcaneShards"),
+		FString("Arcane Shards Ability Tag")
+	);
 
-	// Passive Spells
-
+	/*
+	*	Passive Spells
+	*/ 
 	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Passive"),
 		FString("Passive Ability Tag.")
