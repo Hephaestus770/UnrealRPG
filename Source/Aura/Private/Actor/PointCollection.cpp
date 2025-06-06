@@ -4,6 +4,7 @@
 #include "Actor/PointCollection.h"
 #include <AbilitySystem/AuraAbilitySystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
+#include <Kismet/KismetSystemLibrary.h>
 
 APointCollection::APointCollection()
 {
@@ -55,6 +56,56 @@ APointCollection::APointCollection()
 
 }
 
+TArray<FTransform> APointCollection::GetPointsOnGeometry(int32 PointCount, const float YawOverride)
+{
+	
+	checkf(ImmutablePts.Num() > 0, TEXT("%hs: The number of ImmutablePts must be greater than 0."), __FUNCTION__);
+
+	if (PointCount < 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%hs: Called with invalid PointCount (%i), it must be greater than 0."), __FUNCTION__, PointCount);
+		return TArray<FTransform>();
+	}
+
+	if (PointCount > ImmutablePts.Num())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%hs: Called with invalid PointCount (%i), setting PointCount to the maximum available (%i)."), __FUNCTION__, PointCount, ImmutablePts.Num());
+		PointCount = ImmutablePts.Num();
+	}
+
+	TArray<FTransform> ImmutablePtsAtLocation;
+
+	for (const TObjectPtr<USceneComponent>& Point : ImmutablePts)
+	{
+		FTransform PointTransform = Point->GetComponentTransform();
+		FVector RootToPointVector = PointTransform.GetLocation() - GetActorLocation();
+		RootToPointVector = RootToPointVector.RotateAngleAxis(YawOverride, FVector::UpVector);
+		PointTransform.SetLocation(GetActorLocation() + RootToPointVector);
+
+		FHitResult HitResult;
+		const FVector RaisedLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, PointTransform.GetLocation().Z + 250.0f);
+		const FVector LoweredLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, PointTransform.GetLocation().Z - 250.0f);
+
+		TArray<AActor*> CloseAliveCharacterActors;
+		UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(this, CloseAliveCharacterActors, TArray<AActor*>(), 1500.f, GetActorLocation());
+
+		UKismetSystemLibrary::LineTraceSingle(this, RaisedLocation, LoweredLocation, TraceTypeQuery1, false, CloseAliveCharacterActors, EDrawDebugTrace::ForDuration, HitResult, true, FLinearColor::Red, FLinearColor::Green, 5.f);
+		if (HitResult.bBlockingHit)
+		{
+			const FVector ZAdjustedPointLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, HitResult.ImpactPoint.Z);
+			PointTransform.SetLocation(ZAdjustedPointLocation);
+			PointTransform.SetRotation(UKismetMathLibrary::MakeRotFromZ(HitResult.ImpactNormal).Quaternion());
+
+			ImmutablePtsAtLocation.Emplace(PointTransform);
+			if (ImmutablePtsAtLocation.Num() == PointCount) break;
+		}
+	}
+	return ImmutablePtsAtLocation;
+}
+
+/*
+
+// GroundLocation can be removed!!!
 TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& GroundLocation, int32 NumPoints, float YawOverride)
 {
 	checkf(ImmutablePts.Num() >= NumPoints, TEXT("Attemted to access ImmutablePts out of bounds."));
@@ -72,8 +123,8 @@ TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& Ground
 			Pt->SetWorldLocation(Pt_0->GetComponentLocation() + ToPoint);
 		}
 
-		const FVector RaisedLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, Pt->GetComponentLocation().Z + 500.f);
-		const FVector LoweredLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, Pt->GetComponentLocation().Z - 500.f);
+		const FVector RaisedLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, Pt->GetComponentLocation().Z + 250.f);
+		const FVector LoweredLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, Pt->GetComponentLocation().Z - 250.f);
 
 		FHitResult HitResult; 
 		TArray<AActor*> IgnoreActors;
@@ -91,7 +142,7 @@ TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& Ground
 	}
 	return ArrayCopy;
 }
-
+*/
 void APointCollection::BeginPlay()
 {
 	Super::BeginPlay();

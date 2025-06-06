@@ -148,7 +148,15 @@ void AAuraPlayerController::UpdateMagicCircleLocation()
 {
 	if (IsValid(MagicCircle))
 	{
-		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+		if (CursorHit.bBlockingHit)
+		{
+			MagicCircle->SetActorHiddenInGame(false);
+			MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+		}
+		else
+		{
+			MagicCircle->SetActorHiddenInGame(true);
+		}
 	}
 }
 

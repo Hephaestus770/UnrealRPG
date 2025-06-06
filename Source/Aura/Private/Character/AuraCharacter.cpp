@@ -86,6 +86,10 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 
 void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
 {
+	// When playing as Listen Server with 2 players, the magic circle is also shown on the Server at the world's zero location. 
+	// Return early if character is not locally controlled
+	if (!IsLocallyControlled()) return;
+
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->ShowMagicCircle(DecalMaterial);
@@ -96,6 +100,10 @@ void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMat
 
 void AAuraCharacter::HideMagicCircle_Implementation()
 {
+	// When playing as Listen Server with 2 players, the magic circle is also shown on the Server at the world's zero location. 
+	// Return early if character is not locally controlled
+	if (!IsLocallyControlled()) return;
+
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->HideMagicCirle();
