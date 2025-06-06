@@ -14,14 +14,15 @@ class AURA_API APointCollection : public AActor
 public:	
 	APointCollection();
 
-	/*
+
 	//TODO: GroundLocation variable can be removed. Could have just used a nonpure function and mark it only BlueprintCallable!!!
 	UFUNCTION(BlueprintPure)
-	TArray<USceneComponent*> GetGroundPoints(const FVector& GroundLocation, int32 NumPoints, float YawOverride = 0.f);
-	*/
+	TArray<USceneComponent*> GetGroundPoints(int32 NumPoints, float YawOverride = 0.f);
 
+	/*
 	UFUNCTION(BlueprintPure)
 	TArray<FTransform> GetPointsOnGeometry(int32 PointCount, const float YawOverride);
+		*/
 
 
 protected:

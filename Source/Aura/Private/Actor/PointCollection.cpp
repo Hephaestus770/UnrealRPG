@@ -4,7 +4,7 @@
 #include "Actor/PointCollection.h"
 #include <AbilitySystem/AuraAbilitySystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
-#include <Kismet/KismetSystemLibrary.h>
+
 
 APointCollection::APointCollection()
 {
@@ -55,7 +55,7 @@ APointCollection::APointCollection()
 	Pt_10->SetupAttachment(GetRootComponent());
 
 }
-
+/*
 TArray<FTransform> APointCollection::GetPointsOnGeometry(int32 PointCount, const float YawOverride)
 {
 	
@@ -75,6 +75,9 @@ TArray<FTransform> APointCollection::GetPointsOnGeometry(int32 PointCount, const
 
 	TArray<FTransform> ImmutablePtsAtLocation;
 
+	TArray<AActor*> CloseAliveCharacterActors;
+	UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(this, CloseAliveCharacterActors, TArray<AActor*>(), 1500.f, GetActorLocation());
+
 	for (const TObjectPtr<USceneComponent>& Point : ImmutablePts)
 	{
 		FTransform PointTransform = Point->GetComponentTransform();
@@ -86,10 +89,11 @@ TArray<FTransform> APointCollection::GetPointsOnGeometry(int32 PointCount, const
 		const FVector RaisedLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, PointTransform.GetLocation().Z + 250.0f);
 		const FVector LoweredLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, PointTransform.GetLocation().Z - 250.0f);
 
-		TArray<AActor*> CloseAliveCharacterActors;
-		UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(this, CloseAliveCharacterActors, TArray<AActor*>(), 1500.f, GetActorLocation());
 
+
+		// FOR DEBUG, DELETE LATER!!!
 		UKismetSystemLibrary::LineTraceSingle(this, RaisedLocation, LoweredLocation, TraceTypeQuery1, false, CloseAliveCharacterActors, EDrawDebugTrace::ForDuration, HitResult, true, FLinearColor::Red, FLinearColor::Green, 5.f);
+		
 		if (HitResult.bBlockingHit)
 		{
 			const FVector ZAdjustedPointLocation = FVector(PointTransform.GetLocation().X, PointTransform.GetLocation().Y, HitResult.ImpactPoint.Z);
@@ -102,15 +106,20 @@ TArray<FTransform> APointCollection::GetPointsOnGeometry(int32 PointCount, const
 	}
 	return ImmutablePtsAtLocation;
 }
+*/
 
-/*
 
-// GroundLocation can be removed!!!
-TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& GroundLocation, int32 NumPoints, float YawOverride)
+TArray<USceneComponent*> APointCollection::GetGroundPoints(int32 NumPoints, float YawOverride)
 {
 	checkf(ImmutablePts.Num() >= NumPoints, TEXT("Attemted to access ImmutablePts out of bounds."));
 
 	TArray<USceneComponent*> ArrayCopy;
+
+	TArray<AActor*> IgnoreActors;
+	UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(this, IgnoreActors, TArray<AActor*>(), 1500.f, GetActorLocation());
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActors(IgnoreActors);
 
 	for (USceneComponent* Pt : ImmutablePts)
 	{
@@ -127,11 +136,6 @@ TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& Ground
 		const FVector LoweredLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, Pt->GetComponentLocation().Z - 250.f);
 
 		FHitResult HitResult; 
-		TArray<AActor*> IgnoreActors;
-		UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(this, IgnoreActors, TArray<AActor*>(), 1500.f, GetActorLocation());
-
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActors(IgnoreActors);
 		GetWorld()->LineTraceSingleByProfile(HitResult, RaisedLocation, LoweredLocation, FName("BlockAll"), QueryParams);
 
 		const FVector AdjustedLocation = FVector(Pt->GetComponentLocation().X, Pt->GetComponentLocation().Y, HitResult.ImpactPoint.Z);
@@ -142,7 +146,7 @@ TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& Ground
 	}
 	return ArrayCopy;
 }
-*/
+
 void APointCollection::BeginPlay()
 {
 	Super::BeginPlay();
