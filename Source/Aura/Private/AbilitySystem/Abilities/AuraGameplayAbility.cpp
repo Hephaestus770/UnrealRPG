@@ -43,7 +43,8 @@ bool UAuraGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle H
 {
     // BLOCK ABILITIES THAT HAVE "Abilities.NotUsable.OnAir" TAG WHILE IN AIR, THIS WAY NOT EVERY ABILITY IS BLOCKED. BLUEPRINTS DIDN'T WORKED!!!
     const ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
-    if (Character && Character->GetCharacterMovement()->IsFalling() && AbilityTags.HasTag(FAuraGameplayTags::Get().Abilities_NotUsable_OnAir))
+
+    if (Character && Character->GetCharacterMovement()->IsFalling() && GetAssetTags().HasTag(FAuraGameplayTags::Get().Abilities_NotUsable_OnAir))
     {
         return false;
     }
