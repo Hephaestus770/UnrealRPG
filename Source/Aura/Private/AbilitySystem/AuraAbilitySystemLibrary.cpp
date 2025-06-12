@@ -15,6 +15,7 @@
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "Engine/OverlapResult.h"
+#include <Engine/DamageEvents.h>
 
 
 
@@ -142,6 +143,23 @@ int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* Worl
 	const float XPReward = Info.XPReward.GetValueAtLevel(CharacterLevel);
 
 	return static_cast<int32>(XPReward);
+
+}
+
+float UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(const AActor* TargetActor, float BaseDamage, float MinimumDamage, const FVector& Origin, 
+	float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff)
+{
+	if (!TargetActor || !TargetActor->GetWorld()) return 0.f;
+	
+	FRadialDamageParams RadialDamageParams;
+	RadialDamageParams.BaseDamage = BaseDamage;
+	RadialDamageParams.DamageFalloff = DamageFalloff;
+	RadialDamageParams.InnerRadius = DamageInnerRadius;
+	RadialDamageParams.OuterRadius = DamageOuterRadius;
+	RadialDamageParams.MinimumDamage = MinimumDamage;
+	float Distance = FVector::Dist(Origin, TargetActor->GetActorLocation());
+	float DamageScale = RadialDamageParams.GetDamageScale(Distance);
+	return FMath::Lerp(MinimumDamage, BaseDamage, DamageScale); // Blend between MinimumDamage and BaseDamage
 
 }
 

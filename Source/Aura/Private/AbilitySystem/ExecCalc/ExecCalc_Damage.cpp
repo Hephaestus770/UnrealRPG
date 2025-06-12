@@ -123,6 +123,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
+
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -154,7 +156,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			const bool bDebuff = FMath::RandRange(1, 100) < EffectiveDebuffChance;
 			if (bDebuff)
 			{
-				FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
 
 				UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(ContextHandle, true);
 				UAuraAbilitySystemLibrary::SetDamageType(ContextHandle, DamageType);
@@ -172,6 +173,20 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	bool bIsDebuff = EvaluationParameters.TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Debuff")));
 	
+	// Is it Radial Damage?
+	float DamageScale = 1.f;
+	if (UAuraAbilitySystemLibrary::IsRadialDamage(ContextHandle))
+	{
+		DamageScale = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
+			TargetAvatar,
+			1.f, // Use 1.0 to get the scale factor
+			0.f,
+			UAuraAbilitySystemLibrary::GetRadialDamageOrigin(ContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(ContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(ContextHandle),
+			1.f
+		);
+	}
 
 	// Get Damage Set by Caller Magnitude
 	float Damage = 0.f;
@@ -190,8 +205,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 
 		DamageTypeValue = DamageTypeValue * (100.f - Resistance) / 100.f;
+		DamageTypeValue *= DamageScale; // Apply radial scale
+
 		Damage = Damage + DamageTypeValue;
 	}
+
 
 	// If it is not a debuff(dot) damage then calculate blocked or critical etc. Dot damage does not critc or get blocked
 	if (!bIsDebuff)
