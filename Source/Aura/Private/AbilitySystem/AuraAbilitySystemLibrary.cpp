@@ -146,20 +146,20 @@ int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* Worl
 
 }
 
-float UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(const AActor* TargetActor, float BaseDamage, float MinimumDamage, const FVector& Origin, 
+float UAuraAbilitySystemLibrary::GetRadialDamageScale(const AActor* TargetActor, const FVector& Origin,
 	float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff)
 {
 	if (!TargetActor || !TargetActor->GetWorld()) return 0.f;
 	
 	FRadialDamageParams RadialDamageParams;
-	RadialDamageParams.BaseDamage = BaseDamage;
+	RadialDamageParams.BaseDamage = 1.f;        
+	RadialDamageParams.MinimumDamage = 0.f;
 	RadialDamageParams.DamageFalloff = DamageFalloff;
 	RadialDamageParams.InnerRadius = DamageInnerRadius;
 	RadialDamageParams.OuterRadius = DamageOuterRadius;
-	RadialDamageParams.MinimumDamage = MinimumDamage;
-	float Distance = FVector::Dist(Origin, TargetActor->GetActorLocation());
-	float DamageScale = RadialDamageParams.GetDamageScale(Distance);
-	return FMath::Lerp(MinimumDamage, BaseDamage, DamageScale); // Blend between MinimumDamage and BaseDamage
+
+	const float Distance = FVector::Dist(Origin, TargetActor->GetActorLocation());
+	return FMath::Clamp(RadialDamageParams.GetDamageScale(Distance), 0.f, 1.f);
 
 }
 

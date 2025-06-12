@@ -177,14 +177,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float DamageScale = 1.f;
 	if (UAuraAbilitySystemLibrary::IsRadialDamage(ContextHandle))
 	{
-		DamageScale = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
+		DamageScale = UAuraAbilitySystemLibrary::GetRadialDamageScale(
 			TargetAvatar,
-			1.f, // Use 1.0 to get the scale factor
-			0.f,
 			UAuraAbilitySystemLibrary::GetRadialDamageOrigin(ContextHandle),
 			UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(ContextHandle),
 			UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(ContextHandle),
-			1.f
+			1.f // TODO: Use Curve!
 		);
 	}
 

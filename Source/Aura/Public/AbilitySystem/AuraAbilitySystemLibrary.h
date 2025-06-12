@@ -171,9 +171,12 @@ public:
 
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
 
+	
+ 
+	// Returns a radial damage scale (0 to 1) based on distance from origin.
+	// BaseDamage and MinimumDamage are hardcoded to 1 and 0 for scale-only use.
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
-	static float GetRadialDamageWithFalloff(const AActor* TargetActor, float BaseDamage, float MinimumDamage, const FVector& Origin, float DamageInnerRadius,
-		float DamageOuterRadius, float DamageFalloff);
+	static float GetRadialDamageScale(const AActor* TargetActor, const FVector& Origin, float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff);
 
 
 };
