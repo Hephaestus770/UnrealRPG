@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "MagicCircle.generated.h"
 
+
 UCLASS()
 class AURA_API AMagicCircle : public AActor
 {
