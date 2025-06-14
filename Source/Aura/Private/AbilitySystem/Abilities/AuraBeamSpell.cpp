@@ -115,7 +115,7 @@ void UAuraBeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarget
 		return A && A->ActorHasTag("Player");
 	});
 
-	UAuraAbilitySystemLibrary::GetClosestTargets(EvalMaxTargets, OverlappingActors, OutAdditionalTargets, MouseHitActor->GetActorLocation());
+	UAuraAbilitySystemLibrary::GetClosestTargets(EvalMaxTargets - 1, OverlappingActors, OutAdditionalTargets, MouseHitActor->GetActorLocation());
 
 	for (AActor* Target : OutAdditionalTargets)
 	{

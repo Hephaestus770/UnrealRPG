@@ -111,6 +111,7 @@ public:
 	//Cooldown Tags
 	FGameplayTag Cooldown_Fire_Firebolt;
 	FGameplayTag Cooldown_Lightning_Electrocute;
+	FGameplayTag Cooldown_Arcane_ArcaneShards;
 
 	//Ability Status Tags
 	FGameplayTag Abilities_Status_Locked;
