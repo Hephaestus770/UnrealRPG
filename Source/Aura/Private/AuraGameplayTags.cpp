@@ -488,6 +488,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 
+	// GAMEPLAYCUE TAGS
+	GameplayTags.GameplayCue_FireBlast= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("FireBlast GameplayCue Tag")
+	);
+
+
+
+
 	// EFFECTS 
 
 

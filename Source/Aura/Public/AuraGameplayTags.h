@@ -149,6 +149,8 @@ public:
 	FGameplayTag Player_Block_InputReleased;
 	FGameplayTag Player_Block_CursorTrace;
 
+	// GameplayCue Tags
+	FGameplayTag GameplayCue_FireBlast;
 
 
 
