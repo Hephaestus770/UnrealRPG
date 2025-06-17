@@ -19,6 +19,7 @@ public:
 	virtual FText GetDescription(int32 Level) override;
 	virtual FText GetNextLevelDescription(int32 Level) override;
 
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 MaxNumShards = 11;
 	

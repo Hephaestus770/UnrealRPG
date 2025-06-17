@@ -151,6 +151,7 @@ public:
 
 	// GameplayCue Tags
 	FGameplayTag GameplayCue_FireBlast;
+	FGameplayTag GameplayCue_ArcaneShards;
 
 
 

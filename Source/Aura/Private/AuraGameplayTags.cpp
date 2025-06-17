@@ -494,7 +494,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("FireBlast GameplayCue Tag")
 	);
 
-
+	GameplayTags.GameplayCue_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.ArcaneShards"),
+		FString("ArcaneShards GameplayCue Tag")
+	);
 
 
 	// EFFECTS 
