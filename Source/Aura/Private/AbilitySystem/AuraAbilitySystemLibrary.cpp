@@ -163,6 +163,11 @@ float UAuraAbilitySystemLibrary::GetRadialDamageScale(const AActor* TargetActor,
 
 }
 
+void UAuraAbilitySystemLibrary::SetTargetEffectParamsASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC)
+{
+	DamageEffectParams.TargetAbilitySystemComponent = InASC;
+}
+
 
 UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
@@ -529,45 +534,77 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	return EffectContext;
 }
 
-TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators)
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators, bool bFullCircle)
 {
 	TArray<FRotator> Rotators;
 
-	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
-	if (NumRotators > 1)
+	if (NumRotators <= 0)
 	{
-		const float DeltaSpread = Spread / (NumRotators - 1);
-		for (int32 i = 0; i < NumRotators; i++)
+		return Rotators;
+	}
+
+	if (NumRotators == 1)
+	{
+		Rotators.Add(Forward.Rotation());
+		return Rotators;
+	}
+
+	if (bFullCircle)
+	{
+		const float DeltaAngle = Spread / NumRotators;
+		for (int32 i = 0; i < NumRotators; ++i)
 		{
-			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+			const FVector Direction = Forward.RotateAngleAxis(DeltaAngle * i, Axis);
 			Rotators.Add(Direction.Rotation());
 		}
 	}
 	else
 	{
-		Rotators.Add(Forward.Rotation());
+		const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
+		const float DeltaAngle = Spread / (NumRotators - 1);
+		for (int32 i = 0; i < NumRotators; ++i)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaAngle * i, Axis);
+			Rotators.Add(Direction.Rotation());
+		}
 	}
 
 	return Rotators;
 }
 
-TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors)
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors, bool bFullCircle)
 {
 	TArray<FVector> Vectors;
 
-	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
-	if (NumVectors > 1)
+	if (NumVectors <= 0)
 	{
+		return Vectors;
+	}
+
+	if (NumVectors == 1)
+	{
+		Vectors.Add(Forward);
+		return Vectors;
+	}
+
+	if (bFullCircle)
+	{
+		const float DeltaSpread = Spread / NumVectors;
+		for (int32 i = 0; i < NumVectors; i++)
+		{
+			const FVector Direction = Forward.RotateAngleAxis(DeltaSpread * i, Axis);
+			Vectors.Add(Direction);
+		}
+	}
+	else
+	{
+		const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
 		const float DeltaSpread = Spread / (NumVectors - 1);
 		for (int32 i = 0; i < NumVectors; i++)
 		{
 			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
 			Vectors.Add(Direction);
 		}
-	}
-	else
-	{
-		Vectors.Add(Forward);
 	}
 
 	return Vectors;

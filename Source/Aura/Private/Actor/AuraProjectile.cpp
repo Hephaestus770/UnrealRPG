@@ -88,14 +88,8 @@ void AAuraProjectile::Destroyed()
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 									  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AActor* ThisOwner = GetOwner();
+	if (!IsValidOverlap(OtherActor)) return;
 
-	// Ignore the Owner.
-	if (OtherActor == ThisOwner)
-		return;
-	// Prevent friendly fire.
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(ThisOwner, OtherActor))
-		return;
 	// Ensure projectile overlaps once
 	if (!bDidHit) 
 		OnHit();
@@ -133,6 +127,21 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 void AAuraProjectile::OnHomingTargetDeath(AActor* DeadActor)
 {
 	ProjectileMovement->bIsHomingProjectile = false;
+}
+
+bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
+{
+	// Actors that don't have AbilitySystemComponent are invalid targets
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return false;
+	
+	// Prevent Self Damage
+	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor) return false;
+
+	// Prevent friendly fire
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
+
+	return true;
 }
 
 

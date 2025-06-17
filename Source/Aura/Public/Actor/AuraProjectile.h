@@ -33,6 +33,7 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable)
 	void OnHit();
 	virtual void Destroyed() override;
 
@@ -46,6 +47,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USphereComponent> Sphere;
+
+	UFUNCTION()
+	bool IsValidOverlap(AActor* OtherActor);
+
+	bool bDidHit = false;
 
 private:
 
@@ -65,6 +71,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
-	bool bDidHit = false;
 
 };
