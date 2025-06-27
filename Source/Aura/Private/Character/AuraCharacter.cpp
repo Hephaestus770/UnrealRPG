@@ -12,6 +12,11 @@
 #include "UI/HUD/AuraHUD.h"
 #include <AuraGameplayTags.h>
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
+#include <Game/AuraGameModeBase.h>
+#include <Kismet/GameplayStatics.h>
+#include "Game/LoadScreenSaveGame.h"
+#include <AbilitySystem/AuraAttributeSet.h>
+#include <AbilitySystem/AuraAbilitySystemLibrary.h>
 
 
 
@@ -42,7 +47,44 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 
 	// Init Ability Actor Info for the Server
 	InitAbilityActorInfo();
-	AddCharacterAbilities();
+
+	//Load Game from disk
+	LoadProgress();
+	
+}
+
+
+void AAuraCharacter::LoadProgress()
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (AuraGameMode)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
+		if (SaveData == nullptr) return;
+
+		if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+		{
+			AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+			AuraPlayerState->SetXP(SaveData->XP);
+			AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+			AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+			AuraPlayerState->bIsLoadingFromSave = true;
+		}
+
+
+		if (SaveData->bFirstTimeLoadIn)
+		{
+			InitializeDefaultAttributes();
+			AddCharacterAbilities();
+		}
+		else
+		{
+			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
+			//ApplyEffectToSelf(DefaultSecondaryAttributes);
+			//ApplyEffectToSelf(DefaultVitalAttributes);
+
+		}
+	}
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -112,6 +154,69 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 	}
 }
 
+void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (AuraGameMode)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
+		if (SaveData == nullptr) return;
+
+		SaveData->PlayerStartTag = CheckpointTag;
+
+		if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel = AuraPlayerState->GetPlayerLevel();
+			SaveData->XP = AuraPlayerState->GetXP();
+			SaveData->AttributePoints = AuraPlayerState->GetAttributePoints();
+			SaveData->SpellPoints = AuraPlayerState->GetSpellPoints();
+		}
+		if (UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(GetAttributeSet()))
+		{
+			
+			SaveData->Strength = AuraAS->GetStrength(); // These gets current values
+			SaveData->Dexterity = AuraAS->GetDexterity();
+			SaveData->Intelligence = AuraAS->GetIntelligence();
+
+			/*
+			SaveData->Strength = AuraAS->Strength.GetBaseValue(); // These gets base values
+			SaveData->Dexterity = AuraAS->Dexterity.GetBaseValue();
+			SaveData->Intelligence = AuraAS->Intelligence.GetBaseValue();
+			*/
+		}
+
+		// TODO: Save active gameplay effects
+	/*
+	
+		UAuraAbilitySystemComponent* ASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent());
+		if (ASC)
+		{
+			SaveData->ActiveEffects.Empty(); // Ensure the array is empty before populating
+
+			// Get the container of active effects
+			const FActiveGameplayEffectsContainer& ActiveEffectsContainer = ASC->GetActiveGameplayEffects();
+
+			// Iterate using a traditional for loop and iterators
+			for (auto It = ActiveEffectsContainer.CreateConstIterator(); It; ++It)
+			{
+				const FActiveGameplayEffect& ActiveEffect = *It; // Dereference the iterator to get the FActiveGameplayEffect
+
+				if (const UGameplayEffect* Effect = ActiveEffect.Spec.Def)
+				{
+					FActiveEffectSaveData EffectData;
+					EffectData.EffectName = Effect->GetPathName();
+					EffectData.TimeRemaining = ActiveEffect.GetTimeRemaining(GetWorld()->GetTimeSeconds());
+					EffectData.StackCount = ActiveEffect.Spec.StackCount;
+					SaveData->ActiveEffects.Add(EffectData);
+				}
+			}
+		}
+	*/
+		SaveData->bFirstTimeLoadIn = false;
+		AuraGameMode->SaveInGameProgressData(SaveData);
+	}
+}
+
 int32 AAuraCharacter::GetPlayerLevel_Implementation()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -165,6 +270,7 @@ void AAuraCharacter::OnRep_Burned()
 
 }
 
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();
@@ -188,7 +294,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	}
 
-	InitializeDefaultAttributes();
 
 	// Subscribe to OnLevelChangeDelegate to play the vfx
 	AuraPlayerState->OnLevelChangedDelegate.AddLambda(
@@ -216,6 +321,13 @@ void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
 {
 	if (IsValid(LevelUpNiagaraComponent))
 	{
-		LevelUpNiagaraComponent->Activate(true);
+		if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+		{
+			if (!AuraPlayerState->bIsLoadingFromSave)
+			{
+				LevelUpNiagaraComponent->Activate(true);
+				UGameplayStatics::PlaySoundAtLocation(this, LevelUpSound, GetActorLocation(), GetActorRotation());
+			}
+		}
 	}
 }

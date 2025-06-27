@@ -45,6 +45,8 @@ void AAuraPlayerState::AddtoXP(int32 InXP)
 	const int32 LevelUpsCount = NewLevel - Level;
 	if (LevelUpsCount > 0)
 	{
+		bIsLoadingFromSave = false;
+
 		//Grant attribute/spell points per level up
 		for (int32 SuprassedLevel = Level; SuprassedLevel < NewLevel; ++SuprassedLevel)
 		{
@@ -111,17 +113,19 @@ void AAuraPlayerState::SetSpellPoints(int32 InPoints)
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
-	OnLevelChangedDelegate.Broadcast(Level);
 
+	OnLevelChangedDelegate.Broadcast(Level);
 }
 
 void AAuraPlayerState::OnRep_XP(int32 OldXP) 
 {
+	
 	OnXPChangedDelegate.Broadcast(XP);
 }
 
 void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
 {
+	
 	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
 

@@ -30,6 +30,7 @@ public:
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial) override;
 	virtual void HideMagicCircle_Implementation() override;
+	virtual void SaveProgress_Implementation(const FName& CheckpointTag) override;
 	// end Player Interface
 
 	// Combat Interface
@@ -40,10 +41,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USoundBase* LevelUpSound;
+
 	virtual void OnRep_Stunned() override;
 
 	virtual void OnRep_Burned() override;
 
+	void LoadProgress();
 
 protected:
 	virtual void InitAbilityActorInfo() override;

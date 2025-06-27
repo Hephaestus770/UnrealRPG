@@ -5,6 +5,22 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "LoadScreenSaveGame.generated.h"
+/*
+USTRUCT(BlueprintType)
+struct FActiveEffectSaveData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString EffectName;
+
+	UPROPERTY()
+	float TimeRemaining;
+
+	UPROPERTY()
+	int32 StackCount;
+};
+*/
 
 UENUM(BlueprintType)
 enum ESaveSlotStatus
@@ -41,4 +57,36 @@ public:
 
 	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> SaveSlotStatus = Vacant;
+
+	UPROPERTY()
+	bool bFirstTimeLoadIn = true;
+
+
+	// PLAYER
+
+	UPROPERTY()
+	int32 PlayerLevel = 0;
+
+	UPROPERTY()
+	int32 XP = 0;
+
+	UPROPERTY()
+	int32 SpellPoints = 0;
+
+	UPROPERTY()
+	int32 AttributePoints = 0;
+	
+	UPROPERTY()
+	float Strength = 0;
+
+	UPROPERTY()
+	float Dexterity = 0;
+
+	UPROPERTY()
+	float Intelligence = 0;
+
+	/*
+	UPROPERTY()
+	TArray<FActiveEffectSaveData> ActiveEffects;
+	*/
 };

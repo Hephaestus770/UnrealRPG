@@ -29,8 +29,7 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnMaxManaChanged.Broadcast(GetAuraAS()->GetMaxMana());
 
 	OnStaminaChanged.Broadcast(GetAuraAS()->GetStamina());
-	OnMaxStaminaChanged.Broadcast(GetAuraAS()->GetMaxMana());
-
+	OnMaxStaminaChanged.Broadcast(GetAuraAS()->GetMaxStamina());
 
 }
 
