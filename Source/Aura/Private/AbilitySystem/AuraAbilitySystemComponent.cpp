@@ -9,12 +9,41 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include <Game/LoadScreenSaveGame.h>
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientEffectApplied);
 
 
+
+}
+
+void UAuraAbilitySystemComponent::AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData)
+{
+	for (const FSavedAbility& Data : SaveData->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> LoadedAbilityClass = Data.GameplayAbility;
+		FGameplayAbilitySpec LoadedAbilitySpec = FGameplayAbilitySpec(LoadedAbilityClass, Data.AbilityLevel);
+		
+		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilitySlot);
+		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilityStatus);
+
+		if (Data.AbilitType == FAuraGameplayTags::Get().Abilities_Type_Offensive)
+		{	
+			GiveAbility(LoadedAbilitySpec);
+		}
+		else if (Data.AbilitType == FAuraGameplayTags::Get().Abilities_Type_Passive)
+		{
+			GiveAbility(LoadedAbilitySpec);
+			if (Data.AbilityStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+			{
+				TryActivateAbility(LoadedAbilitySpec.Handle);
+			}
+		}
+	}
+	bStartupAbilitiesGiven = true;
+	AbilitiesGivenDelegate.Broadcast();
 
 }
 
@@ -41,8 +70,8 @@ void UAuraAbilitySystemComponent::AddCharacterPassiveAbilites(const TArray<TSubc
 	for (const TSubclassOf<UGameplayAbility> AbilityClass : StarupPassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 		GiveAbilityAndActivateOnce(AbilitySpec);
-
 	}
 }
 
@@ -318,7 +347,55 @@ void UAuraAbilitySystemComponent::MulticastActivatePassiveEffect_Implementation(
 {
 	ActivatePassiveEffect.Broadcast(AbilityTag, bActivate);
 }
+void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGameplayTag& AbilityTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (GetAvatarActor()->Implements<UPlayerInterface>())
+		{
+			// Check if player has spell points before spending
+			if (IPlayerInterface::Execute_GetSpellPoints(GetAvatarActor()) <= 0)
+			{
+				UE_LOG(LogAura, Warning, TEXT("ServerSpendSpellPoint: Player tried to spend spell point but has none."));
+				return; // Early exit if no points
+			}
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(), -1);
+		}
 
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+
+		FGameplayTag CurrentStatusTag = GetStatusTagFromSpec(*AbilitySpec);
+		FGameplayTag NewStatusTag = CurrentStatusTag; // Initialize with current status
+
+		bool bLeveledUp = false;
+
+		if (CurrentStatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Eligible))
+		{
+			// First spell point unlocks the ability
+			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Eligible);
+			AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Unlocked);
+			NewStatusTag = GameplayTags.Abilities_Status_Unlocked;
+			// Ability level should remain at its base level (usually 1) when just unlocked.
+			// No level increment here.
+		}
+		else if (CurrentStatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked) || CurrentStatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Equipped))
+		{
+			// Subsequent spell points increase the ability level
+			AbilitySpec->Level += 1;
+			bLeveledUp = true;
+		}
+		else
+		{
+			// Handle other unexpected statuses if necessary, or log a warning
+			UE_LOG(LogAura, Warning, TEXT("ServerSpendSpellPoint: Attempted to spend spell point on ability with unhandled status: %s"), *CurrentStatusTag.ToString());
+			return; // Do not proceed if status is not eligible, unlocked, or equipped
+		}
+
+		ClientUpdateAbilityStatus(AbilityTag, NewStatusTag, AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+/*
 void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGameplayTag& AbilityTag)
 {
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
@@ -345,6 +422,7 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 		MarkAbilitySpecDirty(*AbilitySpec);
 	}
 }
+*/
 
 void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& Slot)
 {
@@ -388,6 +466,8 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					TryActivateAbility(AbilitySpec->Handle);
 					MulticastActivatePassiveEffect(AbilityTag, true);
 				}
+				AbilitySpec->DynamicAbilityTags.RemoveTag(GetStatusTagFromSpec(*AbilitySpec));
+				AbilitySpec->DynamicAbilityTags.AddTag(GameplayTags.Abilities_Status_Equipped);
 			}
 
 			AssignSlotToAbility(*AbilitySpec, Slot);

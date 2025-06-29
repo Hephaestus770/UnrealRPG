@@ -14,7 +14,7 @@ DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag& /*Ab
 DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbility, const FGameplayTag& /*AbilityTag*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FActivatePassiveEffect, const FGameplayTag& /*AbilityTag*/, bool /*bActivate*/);
 
-
+class ULoadScreenSaveGame;
 /**
  * 
  */
@@ -34,6 +34,7 @@ public:
 	FDeactivatePassiveAbility DeactivatePassiveAbility;
 	FActivatePassiveEffect ActivatePassiveEffect;
 
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData);
 	void AddCharacterAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupAbilities);
 	void AddCharacterPassiveAbilites(const TArray<TSubclassOf<UGameplayAbility>>& StarupPassiveAbilities);
 

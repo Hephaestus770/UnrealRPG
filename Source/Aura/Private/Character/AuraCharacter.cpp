@@ -17,6 +17,7 @@
 #include "Game/LoadScreenSaveGame.h"
 #include <AbilitySystem/AuraAttributeSet.h>
 #include <AbilitySystem/AuraAbilitySystemLibrary.h>
+#include <AbilitySystem/Data/AbilityInfo.h>
 
 
 
@@ -62,16 +63,6 @@ void AAuraCharacter::LoadProgress()
 		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
 		if (SaveData == nullptr) return;
 
-		if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
-		{
-			AuraPlayerState->SetLevel(SaveData->PlayerLevel);
-			AuraPlayerState->SetXP(SaveData->XP);
-			AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
-			AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
-			AuraPlayerState->bIsLoadingFromSave = true;
-		}
-
-
 		if (SaveData->bFirstTimeLoadIn)
 		{
 			InitializeDefaultAttributes();
@@ -79,11 +70,29 @@ void AAuraCharacter::LoadProgress()
 		}
 		else
 		{
+
+			// Load Level,XP etc from disk
+			if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
+			{
+				AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuraPlayerState->SetXP(SaveData->XP);
+				AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+				AuraPlayerState->bIsLoadingFromSave = true;
+			}
+
+			// Load in Abilities from disk
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				AuraASC->AddCharacterAbilitiesFromSaveData(SaveData);
+				AuraASC->UpdateAbilityStatuses(SaveData->PlayerLevel); // I ADDED THIS !!!
+			}
+		
 			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
 			//ApplyEffectToSelf(DefaultSecondaryAttributes);
 			//ApplyEffectToSelf(DefaultVitalAttributes);
-
 		}
+		
 	}
 }
 
@@ -173,16 +182,46 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		}
 		if (UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(GetAttributeSet()))
 		{
-			
+			/*
 			SaveData->Strength = AuraAS->GetStrength(); // These gets current values
 			SaveData->Dexterity = AuraAS->GetDexterity();
 			SaveData->Intelligence = AuraAS->GetIntelligence();
-
-			/*
+			*/
+		
 			SaveData->Strength = AuraAS->Strength.GetBaseValue(); // These gets base values
 			SaveData->Dexterity = AuraAS->Dexterity.GetBaseValue();
 			SaveData->Intelligence = AuraAS->Intelligence.GetBaseValue();
-			*/
+		
+
+			SaveData->bFirstTimeLoadIn = false;
+
+			// GameMode only lives on server so we can only save on server. GetAbilityInfo() function works on only servert too!
+			if (!HasAuthority()) return; 
+
+			UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+			FForEachAbility SaveAbilityDelegate;
+			SaveData->SavedAbilities.Empty();
+			SaveAbilityDelegate.BindLambda([this, AuraASC, &SaveData](const FGameplayAbilitySpec& AbilitySpec)
+			{
+				const FGameplayTag AbilityTag = AuraASC->GetAbilityTagFromSpec(AbilitySpec);
+				UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(this);
+				FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+				
+
+				FSavedAbility SavedAbility;
+				SavedAbility.GameplayAbility = Info.Ability;
+				SavedAbility.AbilityLevel = AbilitySpec.Level;
+				SavedAbility.AbilitySlot = AuraASC->GetInputTagFromAbilityTag(AbilityTag);
+				SavedAbility.AbilityStatus = AuraASC->GetStatusTagFromAbilityTag(AbilityTag);
+				SavedAbility.AbilityTag = AbilityTag;
+				SavedAbility.AbilitType = Info.AbilityType;
+
+				SaveData->SavedAbilities.AddUnique(SavedAbility);
+
+			});
+
+			AuraASC->ForEachAbility(SaveAbilityDelegate);
+
 		}
 
 		// TODO: Save active gameplay effects
@@ -212,7 +251,6 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 			}
 		}
 	*/
-		SaveData->bFirstTimeLoadIn = false;
 		AuraGameMode->SaveInGameProgressData(SaveData);
 	}
 }
