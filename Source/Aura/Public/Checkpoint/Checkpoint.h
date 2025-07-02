@@ -22,13 +22,15 @@ public:
 
 	/* Save Interface */
 	
-	virtual bool ShouldLoadTransform_Implementation() override { return false; };
+	virtual bool ShouldLoadTransform_Implementation() override { return false; }
 	virtual void LoadActor_Implementation() override;
 	/* end Save Interface */
 
-	UPROPERTY(BlueprintReadOnly, SaveGame)
+	UPROPERTY(BlueprintReadWrite, SaveGame)
 	bool bReached = false;
 
+	UPROPERTY(EditAnywhere)
+	bool bBindOverlapCallback = true;
 protected:
 
 	UFUNCTION()
@@ -40,6 +42,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckPointReached(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
+	UFUNCTION(BlueprintCallable)
 	void HandleGlowEffects();
 
 private:
