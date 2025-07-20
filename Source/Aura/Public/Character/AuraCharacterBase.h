@@ -112,6 +112,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
 
 

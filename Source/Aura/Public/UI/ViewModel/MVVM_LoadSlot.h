@@ -37,9 +37,11 @@ public:
 
 	UPROPERTY()
 	FName PlayerStartTag;
-	
-	// Field Notifies
 
+	UPROPERTY()
+	FString MapAssetName;
+
+	// Field Notifies
 
 	void SetPlayerName(FString InPlayerName);
 	void SetMapName(FString InMapName);
