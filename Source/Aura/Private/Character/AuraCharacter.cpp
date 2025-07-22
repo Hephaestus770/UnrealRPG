@@ -219,7 +219,7 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 				SavedAbility.AbilitySlot = AuraASC->GetInputTagFromAbilityTag(AbilityTag);
 				SavedAbility.AbilityStatus = AuraASC->GetStatusTagFromAbilityTag(AbilityTag);
 				SavedAbility.AbilityTag = AbilityTag;
-				SavedAbility.AbilitType = Info.AbilityType;
+				SavedAbility.AbilityType = Info.AbilityType;
 
 				SaveData->SavedAbilities.AddUnique(SavedAbility);
 

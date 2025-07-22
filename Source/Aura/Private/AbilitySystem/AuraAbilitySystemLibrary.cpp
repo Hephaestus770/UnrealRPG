@@ -3,7 +3,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
-//#include "Game/AuraGameModeBase.h"
+#include "Game/AuraGameModeBase.h"
 #include "Game/AuraGameInstance.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -220,6 +220,14 @@ UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldCont
 		return nullptr;
 	}
 	return AuraGameInstance->AbilityInfo;
+}
+
+ULootTiers* UAuraAbilitySystemLibrary::GetLootTiers(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (AuraGameMode == nullptr) return nullptr;
+	return AuraGameMode->LootTiers;
+
 }
 
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)

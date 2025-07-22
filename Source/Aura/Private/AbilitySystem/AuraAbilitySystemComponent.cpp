@@ -29,11 +29,11 @@ void UAuraAbilitySystemComponent::AddCharacterAbilitiesFromSaveData(ULoadScreenS
 		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilitySlot);
 		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilityStatus);
 
-		if (Data.AbilitType == FAuraGameplayTags::Get().Abilities_Type_Offensive)
+		if (Data.AbilityType == FAuraGameplayTags::Get().Abilities_Type_Offensive)
 		{	
 			GiveAbility(LoadedAbilitySpec);
 		}
-		else if (Data.AbilitType == FAuraGameplayTags::Get().Abilities_Type_Passive)
+		else if (Data.AbilityType == FAuraGameplayTags::Get().Abilities_Type_Passive)
 		{
 			GiveAbility(LoadedAbilitySpec);
 			if (Data.AbilityStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))

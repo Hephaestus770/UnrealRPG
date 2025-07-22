@@ -87,10 +87,10 @@ struct FSavedAbility
 	FGameplayTag AbilitySlot = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FGameplayTag AbilitType = FGameplayTag();
+	FGameplayTag AbilityType = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 AbilityLevel;
+	int32 AbilityLevel = 1;
 
 };
 
