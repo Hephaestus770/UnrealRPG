@@ -73,6 +73,14 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 }
 
 
+void AAuraPlayerController::Look(const FInputActionValue& Value)
+{
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	AddYawInput(LookAxisVector.X);
+	AddPitchInput(LookAxisVector.Y);
+}
+
+
 void AAuraPlayerController::CursorTrace()
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
@@ -175,13 +183,13 @@ void AAuraPlayerController::BeginPlay()
 	}
 
 
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
+	//bShowMouseCursor = true;
+	//DefaultMouseCursor = EMouseCursor::Default;
 
-	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputModeData.SetHideCursorDuringCapture(false);
-	SetInputMode(InputModeData);
+	//FInputModeGameAndUI InputModeData;
+	//InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	//InputModeData.SetHideCursorDuringCapture(false);
+	//SetInputMode(InputModeData);
 
 	if (IsValid(GetPawn()))
 	{
@@ -200,9 +208,12 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Look);
+
 
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
+
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
@@ -210,17 +221,18 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	{
 		return;
 	}
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-
-	const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	if (APawn* ControlledPawn = GetPawn<APawn>())
+	if (APawn* ControlledPawn = GetPawn())
 	{
-		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+		FVector2D MovementVector = InputActionValue.Get<FVector2D>();
+
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		ControlledPawn->AddMovementInput(Forward, MovementVector.Y);
+		ControlledPawn->AddMovementInput(Right, MovementVector.X);
 	}
 }
 

@@ -16,8 +16,14 @@
 #include <Kismet/GameplayStatics.h>
 #include "Game/LoadScreenSaveGame.h"
 #include <AbilitySystem/AuraAttributeSet.h>
-#include <AbilitySystem/AuraAbilitySystemLibrary.h>
 #include <AbilitySystem/Data/AbilityInfo.h>
+#include "UI/Widget/AuraUserWidget.h"
+//#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "UI/Widget/AuraCrosshairWidget.h" 
+#include <Interaction/EnemyInterface.h>
+#include <AbilitySystem/AuraAbilitySystemLibrary.h>
+
+
 
 
 
@@ -31,7 +37,7 @@ AAuraCharacter::AAuraCharacter()
 	LevelUpNiagaraComponent->bAutoActivate = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+	//GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
@@ -40,6 +46,42 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationYaw = false; 
 
 	CharacterClass = ECharacterClass::Elementalist; // Player Character is Elementalist Class
+}
+
+void AAuraCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Add crosshair widget to viewport if locally controlled
+	if (IsLocallyControlled()) //&& CrosshairWidgetClass)
+	{
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		{
+			// Just use the pre-assigned instance - no creation needed
+			if (CrosshairWidgetInstance)
+			{
+				CrosshairWidgetInstance->AddToViewport(9999);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("CrosshairWidgetInstance is null! Assign it in Blueprint."));
+			}
+		}
+	}
+
+	// Start timer for crosshair updates (only if locally controlled)
+	if (IsLocallyControlled())
+	{
+		GetWorldTimerManager().SetTimer(CrosshairTimerHandle, this, &AAuraCharacter::UpdateCrosshairTrace, CrosshairUpdateInterval, true); // Looping timer
+	}
+}
+
+void AAuraCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	// Clear timer to avoid leaks
+	GetWorldTimerManager().ClearTimer(CrosshairTimerHandle);
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)
@@ -92,7 +134,7 @@ void AAuraCharacter::LoadProgress()
 				AuraASC->AddCharacterAbilitiesFromSaveData(SaveData);
 				AuraASC->UpdateAbilityStatuses(SaveData->PlayerLevel); // I ADDED THIS !!!
 			}
-		
+			
 			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
 			//ApplyEffectToSelf(DefaultSecondaryAttributes);
 			//ApplyEffectToSelf(DefaultVitalAttributes);
@@ -149,7 +191,7 @@ void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMat
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->ShowMagicCircle(DecalMaterial);
-		AuraPlayerController->bShowMouseCursor = false;
+		//AuraPlayerController->bShowMouseCursor = false;
 
 	}
 }
@@ -163,7 +205,7 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->HideMagicCirle();
-		AuraPlayerController->bShowMouseCursor = true;
+		//AuraPlayerController->bShowMouseCursor = true;
 
 	}
 }
@@ -378,6 +420,57 @@ void AAuraCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImp
 	Super::MulticastHandleDeath_Implementation(DeathImpulse);
 }
 
+void AAuraCharacter::UpdateCrosshairTrace()
+{
+	if (!GetWorld() || !GetController()) return;
+
+	// Simple camera trace
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+	FVector TraceStart = CameraLocation;
+	FVector TraceEnd = TraceStart + (CameraRotation.Vector() * CrosshairMaxRange);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility,
+		QueryParams
+	);
+
+	float HealthPercent = -1.0f; // Use -1 to indicate "no enemy"
+
+	if (bHit && HitResult.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Crosshair hit: %s"), *HitResult.GetActor()->GetName());
+
+		if (HitResult.GetActor()->Implements<UEnemyInterface>())
+		{
+			HealthPercent = IEnemyInterface::Execute_GetHealthPercent(HitResult.GetActor());
+			UE_LOG(LogTemp, Warning, TEXT("Enemy health percent: %f"), HealthPercent);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Crosshair: No hit detected"));
+	}
+
+	// Update crosshair via the widget
+	if (CrosshairWidgetInstance)
+	{
+		CrosshairWidgetInstance->SetCrosshairColorFromHealth(HealthPercent);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CrosshairWidgetInstance is null in UpdateCrosshairTrace"));
+	}
+}
 void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
 {
 	if (IsValid(LevelUpNiagaraComponent))

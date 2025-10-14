@@ -65,4 +65,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
 	FScalableFloat MaxTargets;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
+	float TraceRadius = 30.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Beam")
+	float MaxDistance = 1000.f;
+
 };

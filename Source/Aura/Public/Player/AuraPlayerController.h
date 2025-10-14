@@ -124,7 +124,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> LookAction;
+
+	/** Called for movement input */
 	void Move(const FInputActionValue& InputActionValue);
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
 
 	void CursorTrace();
 	TScriptInterface <IEnemyInterface> LastActor;

@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
+#include "TimerManager.h" // For FTimerHandle
 #include "AuraCharacter.generated.h"
 
 class UNiagaraComponent;
+class UAuraCrosshairWidget;
 /**
  * 
  */
@@ -18,6 +20,10 @@ class AURA_API AAuraCharacter : public AAuraCharacterBase, public IPlayerInterfa
 	
 public:
 	AAuraCharacter();
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -65,4 +71,42 @@ protected:
 	virtual void MulticastHandleDeath_Implementation(const FVector& DeathImpulse) override;
 
 
+		/* CROSSHAIR / AIM SYSTEM */
+
+public:
+
+	// Cached hit for crosshair (separate trace)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Targeting")
+	FHitResult CachedCrosshairHit;
+
+	// Parameters (match ability defaults)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
+	float CrosshairMaxRange = 10000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
+	float CrosshairCameraNearOffset = 50.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
+	bool bCrosshairPreferPawnOnSight = true;
+
+	// Crosshair widget class
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Targeting")
+	//TSubclassOf<class UAuraUserWidget> CrosshairWidgetClass;
+
+	// Add this to your class members
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
+	UAuraCrosshairWidget* CrosshairWidgetInstance; // Holds the actual instance
+
+
+	// Timer interval (adjustable)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
+	float CrosshairUpdateInterval = 0.05f; // 20Hz
+
+protected:
+	// Function called by timer
+	UFUNCTION()
+	void UpdateCrosshairTrace();
+
+	// Timer handle
+	FTimerHandle CrosshairTimerHandle;
 };

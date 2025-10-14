@@ -28,6 +28,7 @@ public:
 	// EnemyInterface
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	virtual float GetHealthPercent_Implementation() const override;
 	// end EnemyInterface
 
 	// CombatInterface

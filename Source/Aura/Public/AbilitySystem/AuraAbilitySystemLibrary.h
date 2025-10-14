@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Data/CharacterClassInfo.h"
 #include "GameplayTagContainer.h"
+//#include "Engine/EngineTypes.h" // For FHitResult
 #include "AuraAbilitySystemLibrary.generated.h"
 
 class ULoadScreenSaveGame;
@@ -188,6 +189,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
 	static void SetTargetEffectParamsASC(UPARAM(ref) FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
+
+
+	// AIM SYSTEM
+	// New targeting utility
+	UFUNCTION(BlueprintCallable, Category = "Targeting")
+	static FHitResult ComputeForwardTrace(AActor* SourceActor, float MaxRange, float CameraNearOffset, bool bPreferPawnAlongSight);
 
 
 };

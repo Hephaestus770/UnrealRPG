@@ -30,6 +30,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	AActor* GetCombatTarget() const;
+
+	// Add this if not present: Returns health percentage for crosshair color
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemy")
+	float GetHealthPercent() const;
 	
 
 };

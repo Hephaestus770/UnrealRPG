@@ -6,7 +6,7 @@
 FText UElectrocute::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
 	{
@@ -22,7 +22,7 @@ FText UElectrocute::GetDescription(int32 Level)
 				"<Damage>{3}</>"
 				"<Default> lightning damage with a chance to stun</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(ScaledDamage)
 		);
@@ -42,7 +42,7 @@ FText UElectrocute::GetDescription(int32 Level)
 				"<Damage>{4}</>"
 				"<Default> lightning damage with a chance to stun</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(MaxTargets.GetValueAtLevel(Level)),
 			FText::AsNumber(ScaledDamage)
@@ -53,7 +53,7 @@ FText UElectrocute::GetDescription(int32 Level)
 FText UElectrocute::GetNextLevelDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	return FText::Format(
 		FText::FromString(TEXT(
@@ -68,7 +68,7 @@ FText UElectrocute::GetNextLevelDescription(int32 Level)
 			"<Damage>{4}</>"
 			"<Default> lightning damage with a chance to stun</>\n\n")),
 		FText::AsNumber(Level),
-		FText::AsNumber(ManaCost),
+		FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 		FText::AsNumber(Cooldown),
 		FText::AsNumber(MaxTargets.GetValueAtLevel(Level)),
 		FText::AsNumber(ScaledDamage)

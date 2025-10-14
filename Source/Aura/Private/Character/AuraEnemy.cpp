@@ -69,6 +69,31 @@ void AAuraEnemy::UnHighlightActor()
 
 }
 
+float AAuraEnemy::GetHealthPercent_Implementation() const
+{
+	if (!IsValid(AbilitySystemComponent))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ASC is not valid in GetHealthPercent"));
+		return 0.f;
+	}
+
+	const float Health = AbilitySystemComponent->GetNumericAttribute(UAuraAttributeSet::GetHealthAttribute());
+	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(UAuraAttributeSet::GetMaxHealthAttribute());
+
+	// Debug logging to verify values
+	UE_LOG(LogTemp, Warning, TEXT("Enemy %s - Health: %f, MaxHealth: %f"), *GetName(), Health, MaxHealth);
+
+	if (MaxHealth <= 0.f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MaxHealth is 0 or negative"));
+		return 0.f;
+	}
+
+	float Result = FMath::Clamp(Health / MaxHealth, 0.0f, 1.0f);
+	UE_LOG(LogTemp, Warning, TEXT("Health Percent: %f"), Result);
+	return Result;
+}
+
 int32 AAuraEnemy::GetPlayerLevel_Implementation()
 {
 	return Level;

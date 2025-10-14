@@ -23,7 +23,60 @@ public:
 	virtual FText GetNextLevelDescription(int32 Level);
 	static FText GetLockedDescription(int32 Level);
 
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr, 
+		const FGameplayTagContainer* TargetTags = nullptr, 
+		OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
+public:
+	/** ==========================
+		*  CONFIGURABLE ABILITY DATA
+		*  ========================== */
+
+		// Ability-specific mana cost (can be different per ability)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Cost")
+	FScalableFloat  ManaCost = 1.f;
+
+	// Ability-specific cooldown time
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Cooldown")
+	FScalableFloat CooldownTime = 1.f;
+
+	// Each ability has a unique cooldown tag (ex: Cooldown.Fire.Fireball)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Cooldown")
+	FGameplayTag CooldownTag;
+
+	/** ==========================
+	 *  SHARED GAMEPLAY EFFECTS
+	 *  ========================== */
+
+	 // Reusable GameplayEffect asset for costs (set up in editor once)
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Cost")
+	//TSubclassOf<class UGameplayEffect> CostGameplayEffect;
+
+	// Reusable GameplayEffect asset for cooldowns (set up in editor once)
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Cooldown")
+	//TSubclassOf<class UGameplayEffect> CooldownGameplayEffect;
+
+	/** ==========================
+   *  GAS OVERRIDES
+   *  ========================== */
+
+	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
+	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
+
+private:
+	// Temporary container for merged cooldown tags
+	UPROPERTY(Transient)
+	mutable FGameplayTagContainer TempCooldownTags;
 
 
 protected:

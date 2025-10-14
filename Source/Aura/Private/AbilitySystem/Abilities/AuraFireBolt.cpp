@@ -12,7 +12,7 @@
 FText UAuraFireBolt::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
 	{
@@ -28,7 +28,7 @@ FText UAuraFireBolt::GetDescription(int32 Level)
 				"<Damage>{3}</>"
 				"<Default> fire damage with a chance to burn</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(ScaledDamage)
 		);
@@ -48,7 +48,7 @@ FText UAuraFireBolt::GetDescription(int32 Level)
 				"<Damage>{4}</>"
 				"<Default> fire damage with a chance to burn</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(FMath::Min(Level, MaxNumProjectiles)),
 			FText::AsNumber(ScaledDamage)
@@ -59,7 +59,7 @@ FText UAuraFireBolt::GetDescription(int32 Level)
 FText UAuraFireBolt::GetNextLevelDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 
 	return FText::Format(
@@ -74,7 +74,7 @@ FText UAuraFireBolt::GetNextLevelDescription(int32 Level)
 			"<Damage>{4}</>"
 			"<Default> fire damage with a chance to burn</>\n\n")),
 		FText::AsNumber(Level),
-		FText::AsNumber(ManaCost),
+		FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 		FText::AsNumber(Cooldown),
 		FText::AsNumber(FMath::Min(Level, MaxNumProjectiles)),
 		FText::AsNumber(ScaledDamage)

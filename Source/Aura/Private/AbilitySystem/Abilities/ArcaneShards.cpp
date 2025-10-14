@@ -6,7 +6,7 @@
 FText UArcaneShards::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
 	{
@@ -22,7 +22,7 @@ FText UArcaneShards::GetDescription(int32 Level)
 				"<Damage>{3}</>"
 				"<Default> radial ice damage</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(ScaledDamage)
 		);
@@ -42,7 +42,7 @@ FText UArcaneShards::GetDescription(int32 Level)
 				"<Damage>{4}</>"
 				"<Default> radial ice damage</>\n\n")),
 			FText::AsNumber(Level),
-			FText::AsNumber(ManaCost),
+			FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 			FText::AsNumber(Cooldown),
 			FText::AsNumber(FMath::Min(Level, MaxNumShards)),
 			FText::AsNumber(ScaledDamage)
@@ -53,7 +53,7 @@ FText UArcaneShards::GetDescription(int32 Level)
 FText UArcaneShards::GetNextLevelDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	//const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 
 	return FText::Format(
@@ -69,7 +69,7 @@ FText UArcaneShards::GetNextLevelDescription(int32 Level)
 			"<Damage>{4}</>"
 			"<Default> radial ice damage</>\n\n")),
 		FText::AsNumber(Level),
-		FText::AsNumber(ManaCost),
+		FText::AsNumber(ManaCost.GetValueAtLevel(Level)),
 		FText::AsNumber(Cooldown),
 		FText::AsNumber(FMath::Min(Level, MaxNumShards)),
 		FText::AsNumber(ScaledDamage)

@@ -16,9 +16,34 @@ void UAuraBeamSpell::StoreMouseDataInfo(const FHitResult& HitResult)
 		MouseHitLocation = HitResult.ImpactPoint;
 		MouseHitActor = HitResult.GetActor();
 	}
-	else
+	else if (OwnerCharacter) // No hit: compute fallback
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		// Use camera forward vector as fallback direction
+		if (OwnerPlayerController)
+		{
+			FVector CamLoc;
+			FRotator CamRot;
+			OwnerPlayerController->GetPlayerViewPoint(CamLoc, CamRot);
+
+			MouseHitLocation = OwnerCharacter->GetActorLocation() + CamRot.Vector() * MaxDistance;
+		}
+		else
+		{
+			// Fallback to character forward
+			MouseHitLocation = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * MaxDistance;
+		}
+		MouseHitActor = nullptr; // No real actor hit
+	}
+
+	// Rotate character to face MouseHitLocation
+	if (OwnerCharacter)
+	{
+		FVector Dir = MouseHitLocation - OwnerCharacter->GetActorLocation();
+		Dir.Z = 0; // Horizontal rotation only
+		if (!Dir.IsNearlyZero())
+		{
+			OwnerCharacter->SetActorRotation(Dir.Rotation());
+		}
 	}
 }
 
@@ -54,23 +79,43 @@ void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamtTargetLocation)
 			TArray<AActor*>ActorsToIgnore; 
 			ActorsToIgnore.Add(OwnerCharacter); // Ignore self
 			FHitResult HitResult;
+			APlayerController* PC = GetCurrentActorInfo()->PlayerController.Get();
+			// Get camera view for direction
+			FVector CamLoc;
+			FRotator CamRot;
+			PC->GetPlayerViewPoint(CamLoc, CamRot);
+			FVector CamForward = CamRot.Vector();
+
+			//FVector TraceStart = SocketLocation;
+			FVector TraceEnd = SocketLocation + (CamForward * MaxDistance); //BeamtTargetLocation; 
+
 			
 			UKismetSystemLibrary::SphereTraceSingle(
 				OwnerCharacter, 
-				SocketLocation, 
-				BeamtTargetLocation, 
-				10.f, 
+				SocketLocation,
+				TraceEnd,
+				TraceRadius,
 				TraceTypeQuery1, 
 				false, 
 				ActorsToIgnore,
-				EDrawDebugTrace::None,
+				EDrawDebugTrace::ForDuration,
 				HitResult,
-				true);
+				true,
+				FLinearColor::Red,
+				FLinearColor::Green,
+				3.f);
 
 			if (HitResult.bBlockingHit)
 			{
 				MouseHitLocation = HitResult.ImpactPoint;
 				MouseHitActor = HitResult.GetActor();
+			}
+
+			else
+			{
+				// If nothing hit, just go full distance forward
+				MouseHitLocation = TraceEnd;
+				MouseHitActor = nullptr;
 			}
 
 		}
@@ -84,6 +129,7 @@ void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamtTargetLocation)
 		}
 	}
 }
+
 
 void UAuraBeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets)
 {

@@ -17,7 +17,7 @@
 #include "Engine/OverlapResult.h"
 #include <Engine/DamageEvents.h>
 #include "Game/LoadScreenSaveGame.h"
-
+#include "GameFramework/Character.h"
 
 
 
@@ -199,6 +199,105 @@ float UAuraAbilitySystemLibrary::GetRadialDamageScale(const AActor* TargetActor,
 void UAuraAbilitySystemLibrary::SetTargetEffectParamsASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC)
 {
 	DamageEffectParams.TargetAbilitySystemComponent = InASC;
+}
+
+FHitResult UAuraAbilitySystemLibrary::ComputeForwardTrace(AActor* SourceActor, float MaxRange, float CameraNearOffset, bool bPreferPawnAlongSight)
+{
+	if (!SourceActor || !SourceActor->GetWorld()) return FHitResult();
+
+	APlayerController* PC = Cast<APlayerController>(Cast<ACharacter>(SourceActor)->GetController());
+	if (!PC) return FHitResult();
+
+	FVector CamLoc;
+	FRotator CamRot;
+	PC->GetPlayerViewPoint(CamLoc, CamRot);
+	FVector CamForward = CamRot.Vector();
+
+	// 1. Camera Trace
+	FVector CamStart = CamLoc + CamForward * -CameraNearOffset;
+	FVector CamAimPoint = CamStart + CamForward * MaxRange;
+	FVector CamPawnAimPoint = CamAimPoint;
+
+	if (bPreferPawnAlongSight)
+	{
+		FHitResult PawnHit;
+		FCollisionQueryParams PawnParams(SCENE_QUERY_STAT(ForwardTracePawnSight), false);
+		PawnParams.AddIgnoredActor(SourceActor);
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		if (SourceActor->GetWorld()->LineTraceSingleByObjectType(PawnHit, CamStart, CamAimPoint, ObjectParams, PawnParams))
+		{
+			CamPawnAimPoint = PawnHit.ImpactPoint;
+		}
+	}
+
+	FHitResult CamHit;
+	FCollisionQueryParams CamParams(SCENE_QUERY_STAT(ForwardTraceCamera), true);
+	CamParams.AddIgnoredActor(SourceActor);
+	bool bCamBlocked = SourceActor->GetWorld()->LineTraceSingleByChannel(CamHit, CamStart, CamPawnAimPoint, ECC_Visibility, CamParams);
+
+	if (!bCamBlocked)
+	{
+		CamHit.TraceStart = CamStart;
+		CamHit.TraceEnd = CamPawnAimPoint;
+		CamHit.ImpactPoint = CamPawnAimPoint;
+		CamHit.Location = CamPawnAimPoint;
+		CamHit.bBlockingHit = false;
+	}
+
+	// 2. Character Trace
+	FVector CharStart = SourceActor->GetActorLocation() + FVector(0, 0, 80.f);
+	CharStart += CamForward * CameraNearOffset;
+	FVector CharAimPoint = CharStart + CamForward * MaxRange;
+	FVector CharPawnAimPoint = CharAimPoint;
+
+	if (bPreferPawnAlongSight)
+	{
+		FHitResult PawnHit;
+		FCollisionQueryParams PawnParams(SCENE_QUERY_STAT(ForwardTracePawnSight), false);
+		PawnParams.AddIgnoredActor(SourceActor);
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		if (SourceActor->GetWorld()->LineTraceSingleByObjectType(PawnHit, CharStart, CharAimPoint, ObjectParams, PawnParams))
+		{
+			CharPawnAimPoint = PawnHit.ImpactPoint;
+		}
+	}
+
+	FHitResult CharHit;
+	FCollisionQueryParams CharParams(SCENE_QUERY_STAT(ForwardTraceCharacter), true);
+	CharParams.AddIgnoredActor(SourceActor);
+	bool bCharBlocked = SourceActor->GetWorld()->LineTraceSingleByChannel(CharHit, CharStart, CharPawnAimPoint, ECC_Visibility, CharParams);
+
+	if (!bCharBlocked)
+	{
+		CharHit.TraceStart = CharStart;
+		CharHit.TraceEnd = CharPawnAimPoint;
+		CharHit.ImpactPoint = CharPawnAimPoint;
+		CharHit.Location = CharPawnAimPoint;
+		CharHit.bBlockingHit = false;
+	}
+
+	// 3. Combine Results
+	FHitResult FinalHit = CharHit;
+	const float AgreementThreshold = 100.f;
+
+	if (CamHit.GetActor() && CharHit.GetActor() && CamHit.GetActor() == CharHit.GetActor())
+	{
+		FinalHit = CharHit;
+	}
+	else if (FVector::Dist(CamHit.ImpactPoint, CharHit.ImpactPoint) < AgreementThreshold)
+	{
+		FinalHit = CharHit;
+	}
+	else if (bCamBlocked)
+	{
+		FinalHit = CharHit;
+	}
+
+	return FinalHit;
 }
 
 

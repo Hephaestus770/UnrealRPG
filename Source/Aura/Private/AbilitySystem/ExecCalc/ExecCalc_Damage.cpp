@@ -153,7 +153,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			TargetDebuffResistance = FMath::Max<float>(TargetDebuffResistance, 0.f); 
 			// Each point of resistance reduces the debuff chance by 1% of the base chance
 			const float EffectiveDebuffChance = SourceDebuffChance * (100.f - TargetDebuffResistance) / 100.f; 
-			const bool bDebuff = FMath::RandRange(1, 100) < EffectiveDebuffChance;
+			const bool bDebuff = FMath::RandRange(0.f, 100.f) < EffectiveDebuffChance;
 			if (bDebuff)
 			{
 
@@ -219,7 +219,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
       TargetBlockChance = FMath::Max<float>(TargetBlockChance, 0.f);
       
       // If Block is successful halve the damage
-      const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+      const bool bBlocked = FMath::RandRange(1, 100) <= TargetBlockChance;
       
       
       FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
@@ -273,7 +273,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		  SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance, 0.f);
 
 		  // Source's Crit Chance - Target's Crit Resist
-		  const bool bIsCrit = (SourceCriticalHitChance - (TargetCriticalHitResistance * CriticalHitResistentCoefficient)) > FMath::RandRange(1, 100);
+		  //Negative values could cause the chance to be unintentionally high so clamp with EffectiveCritChance
+		  float EffectiveCritChance = FMath::Clamp(SourceCriticalHitChance - (TargetCriticalHitResistance * CriticalHitResistentCoefficient), 0.f, 100.f);
+		  const bool bIsCrit = FMath::FRandRange(0.f, 100.f) < EffectiveCritChance;
 
 		  UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCrit);
 
