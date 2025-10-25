@@ -143,7 +143,6 @@ void AAuraCharacterBase::OnRep_Burned()
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 

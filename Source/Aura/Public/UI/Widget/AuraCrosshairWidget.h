@@ -20,9 +20,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Crosshair")
     void SetCrosshairColorFromHealth(float HealthPercent);
 
-    // Remove the BlueprintImplementableEvent and replace with regular function
-    UFUNCTION(BlueprintCallable, Category = "Crosshair")
-    void SetCrosshairColor(FLinearColor NewColor);
 
 protected:
 

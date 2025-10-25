@@ -143,6 +143,17 @@ public:
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxStamina);
 
+
+
+							/*   MOVE WHILE CASTING SYSTEM */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MovementSpeed, Category = "Movement")
+	FGameplayAttributeData MovementSpeedMultiplier;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MovementSpeedMultiplier);
+
+
+
+
 	/*
 	* Resistance Attributes
 	*/
@@ -262,6 +273,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+
+	UFUNCTION()
+	void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeedMultiplier) const;
 
 	
 private:

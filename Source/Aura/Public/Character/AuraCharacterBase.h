@@ -63,8 +63,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
+
+						/*   MOVE WHILE CASTING SYSTEM */
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 300.f;
+
+
 
 	// Replicated bool values for Debuff Effects because Debuff is Dynamic GE, tags applied are not replicated!
 

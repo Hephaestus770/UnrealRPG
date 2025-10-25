@@ -43,6 +43,7 @@ UAuraAttributeSet::UAuraAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxStamina, GetMaxStaminaAttribute);
 
+	TagsToAttributes.Add(GameplayTags.Attributes_MovementSpeedMultiplier, GetMovementSpeedMultiplierAttribute);
 
 	// Resistance Attributes
 	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute);
@@ -78,6 +79,8 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MovementSpeedMultiplier, COND_None, REPNOTIFY_Always);
 
 
 
@@ -481,6 +484,11 @@ void UAuraAttributeSet::OnRep_ArcanaResistance(const FGameplayAttributeData& Old
 void UAuraAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, PhysicalResistance, OldPhysicalResistance);
+}
+
+void UAuraAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeedMultiplier) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MovementSpeedMultiplier, OldMovementSpeedMultiplier);
 }
 
 
